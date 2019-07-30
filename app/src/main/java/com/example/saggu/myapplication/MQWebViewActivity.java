@@ -72,7 +72,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
 
 
         //request desktopmode
-        mywebView.getSettings().setUserAgentString("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0");
+        mywebView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36");
 
         mywebView.getSettings().setJavaScriptEnabled(true);
         mywebView.getSettings().setDomStorageEnabled(true);
@@ -277,7 +277,6 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
         int id = item.getItemId();
         if (id == R.id.refresh) {
             mywebView.reload();
-
             return true;
         }
         if (id == R.id.restart) {
