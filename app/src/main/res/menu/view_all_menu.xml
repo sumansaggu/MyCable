@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/large_balance"
+        android:orderInCategory="80"
+        android:title="View Large Balance"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/by_number"
+        android:orderInCategory="90"
+        android:title="View By Number" />
+    <item
+        android:id="@+id/colection_btw_two_dates"
+        android:orderInCategory="91"
+        android:title="Between two dates"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/create_pdf"
+        android:orderInCategory="92"
+        android:title="Create PDF"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/manage_stb"
+        android:orderInCategory="100"
+        android:title="Manage STBs"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/add_customer"
+        android:orderInCategory="100"
+        android:title="Add Customer"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/area"
+        android:orderInCategory="100"
+        android:title="Add Area"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/backup_database"
+        android:orderInCategory="200"
+        android:title="Backup Database"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/restore_database"
+        android:orderInCategory="300"
+        android:title="Restore Database"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/set_password"
+        android:orderInCategory="300"
+        android:title="Set Login Password"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/set_MQpassword"
+        android:orderInCategory="300"
+        android:title="Set MQ Id Password"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/importdata"
+        android:orderInCategory="300"
+        android:title="Import Data from Excel"
+        app:showAsAction="never" />
+
+</menu>

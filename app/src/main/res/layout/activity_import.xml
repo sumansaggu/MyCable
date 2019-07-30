@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.saggu.myapplication.ImportActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:id="@+id/txtviewimport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="Import Customers and STB Data" />
+
+        <Button
+            android:id="@+id/importCust"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Customer"
+            android:layout_marginTop="14dp"
+            android:layout_below="@+id/txtviewimport"
+            android:layout_toRightOf="@+id/importSTB"
+            android:layout_toEndOf="@+id/importSTB"
+            android:layout_marginLeft="80dp"
+            android:layout_marginStart="80dp" />
+
+        <Button
+            android:id="@+id/importSTB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="STB"
+            android:layout_marginLeft="64dp"
+            android:layout_marginStart="64dp"
+            android:layout_alignBaseline="@+id/importCust"
+            android:layout_alignBottom="@+id/importCust"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/txtViewHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Need Help Click Here"
+            android:textColor="@color/colorAccent"
+            android:layout_below="@+id/importCust"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="6dp" />
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/lvIntenalStorage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relativeLayout3"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+</RelativeLayout>

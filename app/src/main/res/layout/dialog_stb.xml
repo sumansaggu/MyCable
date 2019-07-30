@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+ >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/layout_list"
+        android:layout_height="350dp">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="350dip"
+            android:id="@+id/stb_list_dialog"
+
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/layout_list">
+
+        <Button
+            android:id="@+id/unassign_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/stb_ok"
+
+            android:layout_alignParentEnd="true"
+
+            android:layout_alignParentRight="true"
+            android:text="UnAssign"
+            android:textAllCaps="false" />
+
+        <EditText
+            android:id="@+id/searchboxstb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+
+            android:layout_toLeftOf="@+id/stb_ok"
+            android:layout_toStartOf="@+id/stb_ok"
+            android:ems="10"
+            android:hint="Search STB"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/stb_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/searchboxstb"
+
+            android:layout_toLeftOf="@+id/unassign_button"
+            android:layout_toStartOf="@+id/unassign_button"
+
+            android:enabled="false"
+            android:text="OK" />
+
+    </RelativeLayout>
+
+
+
+
+</RelativeLayout>

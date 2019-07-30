@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:padding="5dip"
+    android:layout_height="60dip"
+    android:descendantFocusability="blocksDescendants">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView17"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:text="SN"
+        android:focusable="false"
+        android:clickable="false"/>
+
+    <TextView
+        android:text="VC No."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/stb_vc"
+        android:textSize="14sp"
+        android:focusable="false"
+        android:clickable="false"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/stb_sn"
+        android:layout_alignStart="@+id/stb_sn" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView18"
+        android:textSize="14sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="VC"
+        android:focusable="false"
+        android:clickable="false"/>
+
+    <TextView
+        android:id="@+id/Status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:clickable="false"
+        android:focusable="false"
+        android:text="Status"
+        android:textAllCaps="false"
+        android:visibility="invisible" />
+
+    <TextView
+        android:text="Serial No."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/stb_sn"
+        android:textSize="14sp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/textView17"
+        android:layout_toEndOf="@+id/textView17"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp"
+        android:focusable="false"
+        android:clickable="false"/>
+
+    <TextView
+        android:id="@+id/stb_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:clickable="false"
+        android:focusable="false"
+        android:text="TextView"
+        android:visibility="invisible"
+        tools:text="ON/OFF" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/radioBtn"
+        android:focusableInTouchMode="true"
+        android:focusable="false"
+        android:clickable="false"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/stb_status"
+        android:layout_toStartOf="@+id/stb_status"
+        android:layout_marginRight="18dp"
+        android:layout_marginEnd="18dp" />
+
+    <TextView
+        android:id="@+id/stbID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="STBID"
+        android:layout_below="@+id/Status"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>

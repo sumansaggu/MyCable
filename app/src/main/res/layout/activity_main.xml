@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.saggu.myapplication.MainActivity">
+
+    <Button
+        android:id="@+id/gobutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToViewAll"
+        android:text="GO"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="259dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+
+        android:id="@+id/pinEnter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="104dp"
+        android:ems="10"
+        android:hint="Enter your PIN"
+        android:inputType="numberPassword"
+        android:maxLength="4" />
+
+    <TextView
+        android:id="@+id/emailazydev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/gobutton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="93dp"
+        android:text="By: lazydevelopers24x7@gmail.com"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView35"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="42dp"
+        android:text="My Cable"
+        android:textColor="@color/colorAccent"
+        android:textSize="24sp" />
+</RelativeLayout>
