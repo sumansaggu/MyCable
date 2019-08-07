@@ -14,6 +14,8 @@ import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -27,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -106,6 +109,49 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
         }
 
 
+    }
+    public void find(String s){
+
+        mywebView.findAllAsync(s);
+        mywebView.setFindListener(new WebView.FindListener() {
+            @Override
+            public void onFindResultReceived(int activeMatchOrdinal, int numberOfMatches, boolean isDoneCounting) {
+                // Toast.makeText(MQWebViewActivity.this, numberOfMatches+" Matches found", Toast.LENGTH_SHORT).show();
+                TextView findcounttext =(TextView) findViewById(R.id.findCountTxt);
+                if(!isDoneCounting){
+                    return;
+                }
+                if(numberOfMatches>0){
+                    findcounttext.setText(Integer.toString(activeMatchOrdinal + 1) + "/" + Integer.toString(numberOfMatches));
+
+                }
+            }
+        });
+
+    }
+    public void findInPagenext(View view){
+        mywebView.findNext(true);
+    }
+    public void findInPageprevious(View view){
+        mywebView.findNext(false);
+    }
+    private class textWatcher implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String _s = String.valueOf(s);
+            find(_s);
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
     }
 
     public void loadSpinner() {

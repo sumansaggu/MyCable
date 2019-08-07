@@ -3,6 +3,8 @@ package com.example.saggu.myapplication;
 import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.PendingIntent;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -234,7 +236,8 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add("Reciept");
         menu.add("Detail");
-        menu.add("MQ");
+        menu.add("MSO Server");
+        menu.add("Copy STB No.");
         menu.add("Call");
         menu.add("Message");
         menu.add("Start/Cut");
@@ -291,64 +294,85 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
             DialogSTB dialogSTB = new DialogSTB();
             dialogSTB.setArguments(bundle);
             dialogSTB.show(manager, "DialogSTB");
-
-
-        }else if (item.getTitle() == "Detail") {
-            int id = (int) menuInfo.id;
-            Intent intent = new Intent(this, DetailFeesActivity.class);
-            intent.putExtra("ID", id);
-            startActivity(intent);
-
-
-        } else if (item.getTitle() == "Reciept") {
-            android.app.FragmentManager manager = getFragmentManager();
-            Bundle bundle = new Bundle();
-            DialogReciept dialog = new DialogReciept();
-            dialog.setArguments(bundle);
-            int id = (int) menuInfo.id;
-            bundle.putInt("ID", id);
-
-            dialog.show(manager, "dialog");
-
-        } else if (item.getTitle() == "Call") {
-            int custId = (int) menuInfo.id;
-            PersonInfo info = dbHendler.getCustInfo(custId);
-            String contact = info.getPhoneNumber();
-
-            Intent i = new Intent(Intent.ACTION_DIAL);
-            i.setData(Uri.parse("tel:" + "+91" + contact));
-            startActivity(i);
-
-        } else if (item.getTitle() == "MQ") {
+        } else if (item.getTitle() == "Copy STB No.") {
             int custId = (int) menuInfo.id;
             String sn = dbHendler.getAssignedSN(this, custId);
-            Intent intent = new Intent(this, MQWebViewActivity.class);
-            intent.putExtra("CALLINGACTIVITY", "VIEWALL");
-            intent.putExtra("SN", sn);
-            startActivity(intent);
+            // Gets a handle to the clipboard service.
+            ClipboardManager clipboard = (ClipboardManager)
+                    getSystemService(Context.CLIPBOARD_SERVICE);
+            // Creates a new text clip to put on the clipboard
+            ClipData clip = ClipData.newPlainText("simple text", sn);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(this, "Copied " + sn, Toast.LENGTH_SHORT).show();
 
-        } else if (item.getTitle() == "Message") {
-            int custId = (int) menuInfo.id;
-            PersonInfo info = dbHendler.getCustInfo(custId);
-            String name = info.getName();
-            String mobNo = info.getPhoneNumber();
 
-            int balance = info.get_balance();
-            String y = "";
-            List<Fees> detail = dbHendler.getFeesForMsg(custId);
 
-            for (Fees fees : detail) {
+    }else if(item.getTitle()=="Detail")
 
-                String x = "Rs." + fees.getFees() + " " + fees.getDate() + ", ";
-                //    Log.d("single entry ", x);
-                y = y.concat(x);
-            }
-            String z = "Payment due Rs. " + balance + ", " + y;
+    {
+        int id = (int) menuInfo.id;
+        Intent intent = new Intent(this, DetailFeesActivity.class);
+        intent.putExtra("ID", id);
+        startActivity(intent);
 
+
+    } else if(item.getTitle()=="Reciept")
+
+    {
+        android.app.FragmentManager manager = getFragmentManager();
+        Bundle bundle = new Bundle();
+        DialogReciept dialog = new DialogReciept();
+        dialog.setArguments(bundle);
+        int id = (int) menuInfo.id;
+        bundle.putInt("ID", id);
+
+        dialog.show(manager, "dialog");
+
+    } else if(item.getTitle()=="Call")
+
+    {
+        int custId = (int) menuInfo.id;
+        PersonInfo info = dbHendler.getCustInfo(custId);
+        String contact = info.getPhoneNumber();
+
+        Intent i = new Intent(Intent.ACTION_DIAL);
+        i.setData(Uri.parse("tel:" + "+91" + contact));
+        startActivity(i);
+
+    } else if(item.getTitle()=="MSO Server")
+
+    {
+        int custId = (int) menuInfo.id;
+        String sn = dbHendler.getAssignedSN(this, custId);
+        Intent intent = new Intent(this, MQWebViewActivity.class);
+        intent.putExtra("CALLINGACTIVITY", "VIEWALL");
+        intent.putExtra("SN", sn);
+        startActivity(intent);
+
+    } else if(item.getTitle()=="Message")
+
+    {
+        int custId = (int) menuInfo.id;
+        PersonInfo info = dbHendler.getCustInfo(custId);
+        String name = info.getName();
+        String mobNo = info.getPhoneNumber();
+
+        int balance = info.get_balance();
+        String y = "";
+        List<Fees> detail = dbHendler.getFeesForMsg(custId);
+
+        for (Fees fees : detail) {
+
+            String x = "Rs." + fees.getFees() + " " + fees.getDate() + ", ";
+            //    Log.d("single entry ", x);
+            y = y.concat(x);
         }
+        String z = "Payment due Rs. " + balance + ", " + y;
+
+    }
 
         return true;
-    }
+}
 
 
     public void send(String detail, String mobNo) {
@@ -387,7 +411,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
             startActivity(intent);
             return true;
         }
-        if(id == R.id.create_pdf){
+        if (id == R.id.create_pdf) {
             try {
                 createPdf2();
             } catch (FileNotFoundException e) {
@@ -533,80 +557,80 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
     }
 
 
-    private class MySimpleCursorAdapter extends SimpleCursorAdapter {
-        public MySimpleCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
-            super(context, layout, c, from, to, flags);
-        }
+private class MySimpleCursorAdapter extends SimpleCursorAdapter {
+    public MySimpleCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+        super(context, layout, c, from, to, flags);
+    }
 
-        @Override
-        // The newView method is used to inflate a new view and return it,
-        // you don't bind any data to the view at this point.
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            View view = LayoutInflater.from(context).inflate(R.layout.layout_list, parent, false);
-            return view;
-        }
+    @Override
+    // The newView method is used to inflate a new view and return it,
+    // you don't bind any data to the view at this point.
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_list, parent, false);
+        return view;
+    }
 
-        @Override
-        // The bindView method is used to bind all data to a given view
-        // such as setting the text on a TextView.
-        public void bindView(View view, Context context, Cursor cursor) {
+    @Override
+    // The bindView method is used to bind all data to a given view
+    // such as setting the text on a TextView.
+    public void bindView(View view, Context context, Cursor cursor) {
 
-            // Find fields to populate in inflated template
-            TextView name = (TextView) view.findViewById(R.id.pName);
-            TextView mobile = (TextView) view.findViewById(R.id.pMob);
-            TextView conNo = (TextView) view.findViewById(R.id.cNo);
-            TextView sn = (TextView) view.findViewById(R.id.vc_mac);
-            TextView status = (TextView) view.findViewById(R.id.cStatus);
-            TextView fees = (TextView) view.findViewById(R.id.cFees);
-            TextView balance = (TextView) view.findViewById(R.id.cBalance);
-            TextView nickname = (TextView) view.findViewById(R.id.txtnickname);
-
-
-            // Extract properties from cursor
-            //   int id = cursor.getInt(cursor.getColumnIndex(DbHendler.KEY_ID));
-            String mname = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NAME));
-            String mmobile = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_PHONE_NO));
-            String mconno = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_CUST_NO));
-            String msn = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_SN));
-            String mstatus = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_CONSTATUS));
-            String mfees = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_FEES));
-            String mbalance = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_BALANCE));
-            String mnickname = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NICKNAME));
-
-            name.setText(mname);
-            mobile.setText(mmobile);
-            conNo.setText(mconno);
-            sn.setText(msn);
-
-            if (mstatus.equals("ACTIVE")) {
-                status.setText(" ");
-            } else status.setText("C");
-
-            fees.setText(mfees);
-            balance.setText(mbalance);
-            nickname.setText(mnickname);
+        // Find fields to populate in inflated template
+        TextView name = (TextView) view.findViewById(R.id.pName);
+        TextView mobile = (TextView) view.findViewById(R.id.pMob);
+        TextView conNo = (TextView) view.findViewById(R.id.cNo);
+        TextView sn = (TextView) view.findViewById(R.id.vc_mac);
+        TextView status = (TextView) view.findViewById(R.id.cStatus);
+        TextView fees = (TextView) view.findViewById(R.id.cFees);
+        TextView balance = (TextView) view.findViewById(R.id.cBalance);
+        TextView nickname = (TextView) view.findViewById(R.id.txtnickname);
 
 
-        }
+        // Extract properties from cursor
+        //   int id = cursor.getInt(cursor.getColumnIndex(DbHendler.KEY_ID));
+        String mname = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NAME));
+        String mmobile = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_PHONE_NO));
+        String mconno = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_CUST_NO));
+        String msn = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_SN));
+        String mstatus = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_CONSTATUS));
+        String mfees = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_FEES));
+        String mbalance = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_BALANCE));
+        String mnickname = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NICKNAME));
+
+        name.setText(mname);
+        mobile.setText(mmobile);
+        conNo.setText(mconno);
+        sn.setText(msn);
+
+        if (mstatus.equals("ACTIVE")) {
+            status.setText(" ");
+        } else status.setText("C");
+
+        fees.setText(mfees);
+        balance.setText(mbalance);
+        nickname.setText(mnickname);
 
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            //get reference to the row
-            View view = super.getView(position, convertView, parent);
+    }
 
 
-            //check for odd or even to set alternate colors to the row background
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        //get reference to the row
+        View view = super.getView(position, convertView, parent);
+
+
+        //check for odd or even to set alternate colors to the row background
             /*if (position % 2 == 0) {
                 view.setBackgroundColor(Color.rgb(238, 233, 233));
             } else {
                 view.setBackgroundColor(Color.rgb(255, 255, 255));
             }*/
-            return view;
-        }
-
+        return view;
     }
+
+}
 
 
     //region recreate list on dialog closed
@@ -981,6 +1005,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
 
     File myFile;
     String timeStamp;
+
     private void createPdf2() throws FileNotFoundException, DocumentException {
 
         //  File pdfFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "pdfdemo");
@@ -1051,8 +1076,8 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
                 table.addCell(total);
                 table.addCell(rdate);
                 int addfees = Integer.parseInt(cursor.getString(cursor.getColumnIndex(DbHendler.KEY_BALANCE)));
-                if(addfees>0){ //not add advance collected fees
-                    totalfees = totalfees +addfees;
+                if (addfees > 0) { //not add advance collected fees
+                    totalfees = totalfees + addfees;
                 }
             } while (cursor.moveToNext());
         }
@@ -1072,16 +1097,18 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         document.close();
         viewPdf();
     }
-    public  Paragraph addTitle(int areaid){
-      Area area=  dbHendler.getArea(areaid);
-        String areaname =area.get_areaName();
+
+    public Paragraph addTitle(int areaid) {
+        Area area = dbHendler.getArea(areaid);
+        String areaname = area.get_areaName();
 
         Font fontbold = FontFactory.getFont("Times-Roman", 20, Font.BOLD);
-        Paragraph p = new Paragraph("Area: "+areaname+" ("+timeStamp+")", fontbold);
+        Paragraph p = new Paragraph("Area: " + areaname + " (" + timeStamp + ")", fontbold);
         p.setSpacingAfter(20);
         p.setAlignment(1); // Center
         return p;
     }
+
     private void viewPdf() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(myFile), "application/pdf");

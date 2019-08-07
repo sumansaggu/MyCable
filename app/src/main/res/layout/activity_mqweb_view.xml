@@ -33,6 +33,59 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="76dp"
         android:layout_marginEnd="76dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/mysearchbar">
+
+        <EditText
+            android:id="@+id/searchInWebPage"
+            android:layout_width="200dip"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/findPrevious"
+            android:layout_width="50dp"
+
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="104dp"
+            android:layout_marginRight="104dp"
+            android:onClick="findInPageprevious"
+            android:text="P" />
+
+        <Button
+            android:id="@+id/findNext"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginRight="6dp"
+            android:onClick="findInPagenext"
+            android:text="N" />
+
+        <TextView
+            android:id="@+id/findCountTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/findPrevious"
+            android:layout_alignRight="@+id/findPrevious"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="-37dp"
+            android:layout_marginRight="-37dp"
+            android:layout_marginBottom="10dp"
+            android:text="0/0" />
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/relativeLayout4"

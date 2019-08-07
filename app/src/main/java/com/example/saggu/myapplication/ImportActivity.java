@@ -1,9 +1,11 @@
 package com.example.saggu.myapplication;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -54,6 +56,7 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
     TextView title;
     DbHendler dbHendler;
     TextView helpText;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +136,8 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
                     if (lastDirectory.equals(parent.getItemAtPosition(position))) {
                         Log.d(TAG, " selected item for uplaod: " + lastDirectory);
                         //execute method to read exel data
+                        //  BackGroundTask backGroundTask = new BackGroundTask(this);
+                        //  backGroundTask.execute(this,readExelDataCustmer(lastDirectory));
                         readExelDataSTB(lastDirectory);
 
                     } else {
@@ -180,10 +185,10 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
                         String valueCust = getCellsAtString(row, c, formulaEvaluator);
                         String cellInfo = "r:" + r + "; c:" + c + "; v:" + valueCust;
                         Log.d(TAG, "readExelData: data from row: " + cellInfo);
-                        sb.append(valueCust + ", ");
+                        sb.append(valueCust + ", ");// comma should not be anywhere in cells
                     }
                 }
-                sb.append(":");
+                sb.append(":"); // semicolon should not be anywhare in cells
             }
             Log.d(TAG, "readExelData: " + sb.toString());
             parseStringBuilderCust(sb);
@@ -233,6 +238,7 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+
     private void readExelDataSTB(String filePath) {
         Log.d(TAG, "readExelData...");
         //declare input file
@@ -244,29 +250,35 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
             int rowscount = sheet.getPhysicalNumberOfRows();
             FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
             StringBuilder sb = new StringBuilder();
+            Log.d(TAG, "Toata rows: " + rowscount);
 
-            //loops through the rows
-            for (int r = 1; r < rowscount; r++) {
-                Row row = sheet.getRow(r);
-                int cellscount = row.getPhysicalNumberOfCells();
-                //loop through the columns
-                for (int c = 0; c < cellscount; c++) {
-                    //handle if there are two many columns in the sheet
-                    if (c > 2) {
-                        toast("format not supported");
-                        break;
-                    } else {
-                        String valueSTB = getCellsAtString(row, c, formulaEvaluator);
-                        String cellInfo = "r:" + r + "; c:" + c + "; v:" + valueSTB;
-                        Log.d(TAG, "readExelData: data from row: " + cellInfo);
-                        sb.append(valueSTB + ", ");
+            try {
+                //loops through the rows
+                for (int r = 1; r < rowscount; r++) {
+                    Row row = sheet.getRow(r);
+                    //    Log.d(TAG, "Row " + row + " " + r);
+                    int cellscount = row.getPhysicalNumberOfCells();
+                    //loop through the columns
+                    for (int c = 0; c < cellscount; c++) {
+                        //handle if there are two many columns in the sheet
+                        if (c > 2) {
+                            toast("format not supported");
+                            break;
+                        } else {
+                            String valueSTB = getCellsAtString(row, c, formulaEvaluator);
+                            String cellInfo = "r:" + r + "; c:" + c + "; v:" + valueSTB;
+                            Log.d(TAG, "readExelData: data from row: " + cellInfo);
+                            sb.append(valueSTB + ", ");
+                        }
                     }
+                    sb.append("%");
                 }
-                sb.append("%");
+                Log.d(TAG, "readExelData: " + sb.toString());
+                parseStringBuilderSTB(sb);
+               // toast("Upload Success");
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
-            Log.d(TAG, "readExelData: " + sb.toString());
-            parseStringBuilderSTB(sb);
-            toast("Upload Success");
         } catch (FileNotFoundException ex) {
             Log.e(TAG, "readExelData: file not found " + ex.getMessage());
         } catch (IOException ex) {
@@ -278,30 +290,13 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
     private void parseStringBuilderSTB(StringBuilder mStingBuilder) {
         Log.d(TAG, "parseStringBuilderCust:STB parsing started");
         //splits the sb into rows
-        String[] rows = mStingBuilder.toString().split("%");
-        //add to the arraylist row by row
-        for (int i = 0; i < rows.length; i++) {
-            //split the columns of rows
-            String[] columns = rows[i].split(",");
-            //use try catch to make sure there are no "" that try to parse into doubles.
-            try {
-                String sn = columns[0];
-                String vc_mac = columns[1];
-                String status = "ACTIVE";
-                dbHendler.AddNewStb(new STB(sn, vc_mac, status));
-                String cellInfo = "Rows.." + i + " | " + sn + " | " + vc_mac + " | ";
-                Log.d(TAG, "parseStringBuilderCust: data from row: " + cellInfo);
+        String[] rows = mStingBuilder.toString().split("%"); //try to pass this array for asycTaks
 
+        BackGroundTask backGroundTask = new BackGroundTask(this);
+       backGroundTask.execute(rows); // Array passed as parameter to asyctask
+       // BgTask bgTask =new BgTask();
+        //bgTask.execute(rows);
 
-                //    add the data to ArrayList
-
-                //    uploadSTB.add(new STB(sn, vc_mac));
-            } catch (NumberFormatException ex) {
-                Log.e(TAG, "parseStringBuilder STB: NUMBERFORMATEXCEPTION " + ex.getMessage());
-            } catch (SQLiteConstraintException ex) {
-                toast("" + ex);
-            }
-        }
 
     }
 
@@ -419,4 +414,74 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
         return true;
 
     }
+
+  public class BgTask extends AsyncTask<String[],Integer,Void>{
+
+      @Override
+      protected void onPreExecute() {
+          super.onPreExecute();
+          progressDialog = new ProgressDialog(ImportActivity.this);
+          progressDialog.setTitle("Wait..");
+          progressDialog.setMessage("Wait...Reading Data");
+          progressDialog.setCanceledOnTouchOutside(false);
+          progressDialog.setIndeterminate(false);
+          progressDialog.show();
+      }
+
+      @Override
+      protected Void doInBackground(String[]... params) {
+
+          String[] rows = params[0]; //get passed array from params
+          int rowcount =rows.length;
+
+          //get the rows form array
+          for (int i = 0; i < rows.length; i++) {
+              //split the columns of rows
+              String[] columns = rows[i].split(",");
+              //use try catch to make sure there are no "" that try to parse into doubles.
+              try {
+                  String sn = columns[0];
+                  String vc_mac = columns[1];
+                  String status = "ACTIVE";
+                  String cellInfo = "Rows.." + i + " | " + sn + " | " + vc_mac + " | ";
+                  Log.d(TAG, "parseStringBuilderCust: data from row: " + cellInfo);
+
+                  //    add the data to ArrayList only for log purpose
+                  //   uploadSTB.add(new STB(sn, vc_mac));
+                  dbHendler.AddNewStb(new STB(sn,vc_mac,status));
+
+                  // Publish the async task progress
+                  // Added 1, because index start from 0
+                  publishProgress(i);
+                //  publishProgress((int) (((rowcount+1) / (float) rowcount) * 100));
+
+
+              } catch (NumberFormatException ex) {
+                  Log.e(TAG, "parseStringBuilder STB: NUMBERFORMATEXCEPTION " + ex.getMessage());
+              } catch (SQLiteConstraintException ex) {
+                  //Toast.makeText(context, ""+ex.toString(), Toast.LENGTH_SHORT).show();
+              }
+          }
+
+
+          return null;
+
+      }
+
+
+      @Override
+      protected void onProgressUpdate(Integer... progress) {
+          Log.d(TAG, "onProgressUpdate: called");
+         progressDialog.setMessage(""+progress[0]);
+        //  progressDialog.setProgress(progress[0]);
+
+      }
+
+      @Override
+      protected void onPostExecute(Void aVoid) {
+          progressDialog.dismiss();
+      }
+  }
+
 }
+

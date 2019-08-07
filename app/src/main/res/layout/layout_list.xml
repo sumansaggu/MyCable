@@ -64,42 +64,37 @@
         android:layout_toRightOf="@+id/textView"
         android:text="13" />
 
-    <RelativeLayout
-        android:layout_width="97dp"
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/textView"
 
 
-        android:layout_marginTop="0dp"
-        >
+        android:layout_below="@+id/textView5"
+        android:layout_alignStart="@+id/textView"
+        android:layout_alignLeft="@+id/textView"
+        android:layout_marginStart="253dp"
+        android:layout_marginLeft="253dp"
 
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="Bal:  Rs."
+        tools:layout_editor_absoluteX="201dp"
+        tools:layout_editor_absoluteY="60dp" />
 
+    <TextView
+        android:id="@+id/cBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cFees"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="21dp"
+        android:layout_marginRight="21dp"
+        android:text="0000" />
 
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginEnd="38dp"
-            android:layout_marginRight="38dp"
-            android:text="Bal:    Rs."
-            android:textColor="@color/cast_expanded_controller_text_color"
-            tools:layout_editor_absoluteX="201dp"
-            tools:layout_editor_absoluteY="60dp" />
-
-        <TextView
-            android:id="@+id/cBalance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginEnd="1dp"
-            android:layout_marginRight="1dp"
-            android:text="0000"
-            android:textColor="@color/cast_expanded_controller_text_color" />
-    </RelativeLayout>
- <TextView
+    <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -108,8 +103,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="18dp"
-        android:layout_marginEnd="58dp"
-        android:layout_marginRight="58dp"
+        android:layout_marginEnd="69dp"
+        android:layout_marginRight="69dp"
         android:text="Fees:  Rs." />
 
     <TextView
@@ -133,7 +128,7 @@
         android:layout_below="@+id/textView"
         android:layout_toEndOf="@+id/textView"
         android:layout_toRightOf="@+id/textView"
-        android:text="FCBF" />
+        android:text="FCBFXXXXXX" />
 
     <TextView
         android:id="@+id/cStatus"
