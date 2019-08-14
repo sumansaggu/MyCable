@@ -1,12 +1,19 @@
 package com.example.saggu.myapplication;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -14,9 +21,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class DbHendler extends SQLiteOpenHelper {
@@ -26,6 +35,7 @@ public class DbHendler extends SQLiteOpenHelper {
     // Database Version
     String TAG = "MyApp_dbhendler";
     private static final int DATABASE_VER = 36;
+    Context context;
 
 
     private static final File DATABASE_FILE_PATH = Environment.getExternalStorageDirectory();
@@ -175,9 +185,10 @@ public class DbHendler extends SQLiteOpenHelper {
 
 
     public DbHendler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, path, factory, DATABASE_VER);
-    }
 
+        super(context, path, factory, DATABASE_VER);
+        this.context = context;
+    }
 
 
     @Override
@@ -430,8 +441,6 @@ public class DbHendler extends SQLiteOpenHelper {
     }
 
 
-
-
     //region serarch person to list
     public Cursor searchSTBToList(String STBsearch) {
         SQLiteDatabase db = getWritableDatabase();
@@ -464,12 +473,13 @@ public class DbHendler extends SQLiteOpenHelper {
             return null;
         }
     }
+
     //endregion
     public Cursor listforBtwtwoDates(String from, String to) {
-        String selectQuery = "SELECT "+TABLE_FEES+"."+KEY_ID+", "+KEY_RECIEPT+",curBalance, "+KEY_DATE+", "+KEY_REMARK+", "+KEY_NAME+", "+TABLE_PERSON_INFO+"._id"+
+        String selectQuery = "SELECT " + TABLE_FEES + "." + KEY_ID + ", " + KEY_RECIEPT + ",curBalance, " + KEY_DATE + ", " + KEY_REMARK + ", " + KEY_NAME + ", " + TABLE_PERSON_INFO + "._id" +
                 " FROM " + TABLE_FEES +
                 " LEFT JOIN " + TABLE_PERSON_INFO + " ON " + TABLE_PERSON_INFO + "._id =" + TABLE_FEES + "._id" +
-                " WHERE " + KEY_DATE + " BETWEEN '" + from + "' AND '" + to+"'" ;
+                " WHERE " + KEY_DATE + " BETWEEN '" + from + "' AND '" + to + "'";
         Log.d(TAG, "listforBtwtwoDates: " + selectQuery);                                                                                                                           //   LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID ORDER BY cust_no ASC ";
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -648,6 +658,7 @@ public class DbHendler extends SQLiteOpenHelper {
     }
 
     public void AddNewStb(STB stb) {
+        Log.d(TAG, "AddNewStb: dbhendler");
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_SN, stb.getSerialNo());
@@ -970,36 +981,16 @@ public class DbHendler extends SQLiteOpenHelper {
 
     //region end of month
 
-
     public void endOfMonth(Context context) {
-        String selectQuery = "SELECT  * FROM " + TABLE_PERSON_INFO + " WHERE " + KEY_CONSTATUS + " = 'ACTIVE'";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                int id_column = cursor.getColumnIndex(KEY_ID);
-                int id = cursor.getInt(id_column);
-                int feesColumn = cursor.getColumnIndex(KEY_FEES);
-                int i = cursor.getInt(feesColumn);
-                int balanceColumn = cursor.getColumnIndex(KEY_BALANCE);
-                int j = cursor.getInt(balanceColumn);
-                int k = i + j;
-                // Adding contact to list
-                Log.d(TAG, "ID:" + id + " " + i + " " + j + "=" + k);
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(KEY_BALANCE, k);
-                db.update(TABLE_PERSON_INFO, contentValues, KEY_ID + "=?", new String[]{String.valueOf(id)});
-            } while (cursor.moveToNext());
-            Toast.makeText(context, "Fees updated for all", Toast.LENGTH_LONG).show();
-            entryTomonthTable();
-        }
-        cursor.close();
+
+        BGTask bgTask = new BGTask();
+        bgTask.execute();
+
     }
 
     public void entryTomonthTable() {
         Calendar calender = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         String formattedDate = df.format(calender.getTime());
         ContentValues values = new ContentValues();
         String selectQuery = "SELECT  * FROM " + TABLE_EXTRAS;
@@ -1012,17 +1003,28 @@ public class DbHendler extends SQLiteOpenHelper {
         Log.d(TAG, "add to extra table");
     }
 
-    public void checkmonthchange(Context Context) {
+    public String checkLastMonthlyUpdate(Context Context) {
+        String monthEnded= null;
+        Date today =new Date();
+        long diffDays = 0;
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_EXTRAS;
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToLast()) {
             int id = (Integer.parseInt(cursor.getString(0)));
-            String month = (cursor.getString(1));
-            Toast.makeText(Context, "Month was ended at: " + month, Toast.LENGTH_LONG).show();
+             monthEnded = (cursor.getString(1));
+            try {
+                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(monthEnded);
+                long diff = today.getTime()- date.getTime();
+                diffDays = diff/(1000 * 60 * 60 * 24);
+                Log.d(TAG, "checkLastMonthlyUpdate: "+diffDays);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(Context, "Month was ended at: "+monthEnded  , Toast.LENGTH_LONG).show();
         }
         cursor.close();
-
+         return monthEnded+" ("+diffDays+" Days ago)";
     }
     //endregion
 
@@ -1282,6 +1284,78 @@ public class DbHendler extends SQLiteOpenHelper {
     public void createIDPWTable() {
         SQLiteDatabase db = this.getReadableDatabase();
         onCreate(db);
+    }
+
+    public class BGTask extends AsyncTask<Void, Integer, Void> {
+
+        ProgressDialog progressDialog;
+        int rowcount;
+
+        @Override
+        protected void onPreExecute() {
+
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Wait..");
+            //progressDialog.setMessage("Wait...Reading Data");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setIndeterminate(false);
+            progressDialog.show();
+            ;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // Log.d(TAG, "doInBackground: called");
+            String selectQuery = "SELECT  * FROM " + TABLE_PERSON_INFO + " WHERE " + KEY_CONSTATUS + " = 'ACTIVE'";
+            SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
+             rowcount = cursor.getCount();
+            int progress = 1;
+            // looping through all rows and adding to list
+            if (cursor.moveToFirst()) {
+                do {
+                    int id_column = cursor.getColumnIndex(KEY_ID);
+                    int id = cursor.getInt(id_column);
+                    int feesColumn = cursor.getColumnIndex(KEY_FEES);
+                    int i = cursor.getInt(feesColumn);
+                    int balanceColumn = cursor.getColumnIndex(KEY_BALANCE);
+                    int j = cursor.getInt(balanceColumn);
+                    int k = i + j;
+                    // Adding contact to list
+                    Log.d(TAG, "ID:" + id + " " + i + " " + j + "=" + k);
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(KEY_BALANCE, k);
+                    db.update(TABLE_PERSON_INFO, contentValues, KEY_ID + "=?", new String[]{String.valueOf(id)});
+                    progress++;
+                    if(progress>(rowcount-10)){
+                        try {
+                            Thread.sleep(600);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    publishProgress(progress);
+                } while (cursor.moveToNext());
+                entryTomonthTable();
+            }
+            cursor.close();
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            Log.d(TAG, "onProgressUpdate: called");
+            //  super.onProgressUpdate(progress);
+            progressDialog.setMessage("Updating Balance for customer " + values[0] + " of "+rowcount);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            progressDialog.dismiss();
+            Toast.makeText(context, " Records Inserted", Toast.LENGTH_SHORT).show();
+            //try to update the list adaptor
+        }
     }
 
 

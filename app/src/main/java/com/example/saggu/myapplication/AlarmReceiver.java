@@ -2,9 +2,11 @@ package com.example.saggu.myapplication;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,16 +22,21 @@ import java.util.Date;
  */
 
 
-public class AlarmReceiver extends BroadcastReceiver {
+public  class AlarmReceiver extends BroadcastReceiver {
 
     DbHendler dbHendler;
     String TAG = "Alarm Reciever";
     String done = "DONE";
     String notDone = "NOTDONE";
+    Context context;
+
+
 
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context ctx, Intent intent) {
+        this.context = ctx;
+
 
         Log.d(TAG, "onRecieve called ");
 
@@ -40,21 +47,21 @@ public class AlarmReceiver extends BroadcastReceiver {
         dbHendler = new DbHendler(context, null, null, 1);
         String flag = dbHendler.monthFlag();
         Log.d(TAG, flag);
-        Log.d(TAG, "Day is " + date);
 
-       //date == 1 means it will update the balance on 1st of every month
-        if (date == 1 && flag.equals(notDone)) {
+
+        //date == 1 means it will update the balance on 1st of every month
+        if          (date == 9 )//               (date == 9 && flag.equals(notDone))
+        {
             dbHendler.copyDbToExternalStorage(context);
             dbHendler.monthFlagChange(done);
             String fl = dbHendler.monthFlag();
             Log.d(TAG, "flag changed to " + fl);
             Log.d(TAG, "balance will be updated");
-          // Balance will be updated
 
 
-            dbHendler.endOfMonth(context);
 
-        }
+          //  dbHendler.endOfMonth(context);
+       }
 
         if (date > 1 && flag.equals(done)) {
             dbHendler.monthFlagChange(notDone);
@@ -71,6 +78,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
     }
+
+
 
 
 }

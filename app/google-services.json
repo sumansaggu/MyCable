@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "780961708981-05ft4n1fhqdeev20fr2prtsi0j73bro0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.saggu.myapplication",
+            "certificate_hash": "4d16e6799e6e9f5c0e2a93ff9f8201854fa25998"
+          }
+        },
+        {
           "client_id": "780961708981-bh0okae4lqn82f9cvrqop8k95b87h7a5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -49,20 +57,13 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "780961708981-aren8j1629q4ciumhclid82q8u8b8t24.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }

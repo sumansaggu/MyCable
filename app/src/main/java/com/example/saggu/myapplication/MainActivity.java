@@ -80,29 +80,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
-
         signIn();
-
-
         if (checkApi() >= 23) {
             //  permission();
             checkAndRequestPermissions();
         }
         loadShardPref();
-
     }
-
-
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-
     private void signOut() {
         FirebaseAuth.getInstance().signOut();
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -123,10 +114,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d("AUTH", " signInWithCredential:OnComplete: " + task.isSuccessful());
-
                         getCurrentUser();
-
-
                     }
                 });
     }
@@ -147,19 +135,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
     }
-
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "Connection failed");
     }
-
     @Override
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
-
     @Override
     public void onStop() {
         super.onStop();
@@ -167,14 +151,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
     public int checkApi() {
         String currntVersion = Build.VERSION.RELEASE;
         int currentRealease = Build.VERSION.SDK_INT;
         Log.d(TAG, "OS:" + currntVersion + " API:" + currentRealease);
         return currentRealease;
     }
-
     public void goToViewAll(View view) {
         String enteredPass = pinEnter.getText().toString().trim();
         if (enteredPass.equals(oldp)) {
@@ -186,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             Toast.makeText(this, "Wrong Password", Toast.LENGTH_SHORT).show();
         }
     }
-
     private static final int MY_PERMISSIONS_REQUEST = 1;
 
     private boolean checkAndRequestPermissions() {
@@ -197,8 +178,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 Manifest.permission.READ_PHONE_STATE);
         int permissionSendSMS = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.SEND_SMS);
-
-
         List<String> listPermissionsNeeded = new ArrayList<>();
 
         if (permissionWriteExternalStorage != PackageManager.PERMISSION_GRANTED) {
@@ -218,8 +197,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         return true;
     }
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 
@@ -229,11 +206,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 } else {
-                     checkAndRequestPermissions();
+                    checkAndRequestPermissions();
                 }
                 break;
         }
-
     }
 
 
@@ -242,6 +218,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         String data = sharedPreferences.getString("pass", "");
         Log.d(TAG, "Old password: " + data);
         oldp = data;
+        if (oldp.equals(null)||oldp.equals("")){
+            Toast.makeText(this, " Password is not set, press GO button ", Toast.LENGTH_SHORT).show();
+        }
 
     }
 

@@ -1,11 +1,13 @@
 package com.example.saggu.myapplication;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -74,6 +77,9 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
     EditText searchBox;
     int backpress;
     String searchItem = "";
+    String done = "DONE";
+    String notDone = "NOTDONE";
+    Context context;
 
     private Cursor mCursor;
     Spinner spinnerArea, spinnerSearchBy;
@@ -95,7 +101,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
     //use to set background color
     BaseColor myColor = WebColors.getRGBColor("#9E9E9E");
     BaseColor myColor1 = WebColors.getRGBColor("#757575");
-
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,9 +110,9 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         jobScheduler = JobScheduler.getInstance(this);
 
         setContentView(R.layout.activity_view_all);
-
+        context = getApplicationContext();
         dbHendler = new DbHendler(this, null, null, 1);
-
+        progressBar = findViewById(R.id.viewAllProgBar);
         listViewCustomers = (ListView) findViewById(R.id.listView);
         listViewCustomers.setOnItemClickListener(this);
         searchBox = (EditText) findViewById(R.id.search_box);
@@ -142,10 +148,10 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
 
                 }
                 if (searchBox.getText().toString().equals("checkmonth")) {
-                    dbHendler.checkmonthchange(getApplicationContext());
+                    dbHendler.checkLastMonthlyUpdate(getApplicationContext());
 
                 }
-                if (searchBox.getText().toString().equals("@endofmonth@")) {
+                if (searchBox.getText().toString().equals("endmonth")) {
                     dbHendler.endOfMonth(getApplicationContext());
                     searchBox.setText("");
                 }
@@ -194,25 +200,59 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         spinnerSearchBy = (Spinner) findViewById(R.id.spinnerSearchByName);
         spinnerSearchBy.setOnItemSelectedListener(this);
         loadSpinnerData();
-        scheduleAlarm();
+
+        //  scheduleAlarm();
+        checkDate();
     }
 
 
+    public void checkDate() {
+        Calendar calendarNOW = Calendar.getInstance();
+        calendarNOW.getTimeInMillis();
+        int date = Integer.parseInt(getDate(calendarNOW.getTime()));
+        String flag = dbHendler.monthFlag();
+        Log.d(TAG, flag);
+        Log.d(TAG, "checkDate: ");
+        Log.d(TAG, "Day is " + date);
+        String lastBalanceUpdate=null;
+        if (date == 14)
+        //(date == 1 && flag.equals(notDone))
+        {
+            lastBalanceUpdate=  dbHendler.checkLastMonthlyUpdate(context);// will check last monthly operation performed date
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Yes button clicked
+                            dbHendler.copyDbToExternalStorage(context);
+                            dbHendler.monthFlagChange(done);
+                            String fl = dbHendler.monthFlag();
+                            Log.d(TAG, "flag changed to " + fl);
+                            Log.d(TAG, "balance will be updated");
+                            dbHendler.endOfMonth(context);
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            Toast.makeText(context, "Montly Balance Update Canceled ", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                }
+            };
+            AlertDialog.Builder builder = new AlertDialog.Builder(ViewAll.this);
+            builder.setMessage("Update monthly Fees?? Last Updated on "+ lastBalanceUpdate).setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show();
+        }
+        if (date > 1 && flag.equals(done)) {
+            dbHendler.monthFlagChange(notDone);
+            String fl = dbHendler.monthFlag();
+            Log.d(TAG, "flag changed to " + fl);
+
+        }
+    }
     public void scheduleAlarm() {
 
         Calendar calendarNOW = Calendar.getInstance();
         calendarNOW.getTimeInMillis();
-
-        //  Log.d(TAG, calendarNOW.getTime().toString());
-        int today = Integer.parseInt(getDate(calendarNOW.getTime()));
-        //  Log.d(TAG, "Today is " + today);
-
-        Calendar calendar2 = Calendar.getInstance();
-        //  calendar2.set(Calendar.DAY_OF_MONTH, 6);
-        //   calendar2.set(Calendar.MINUTE,44);
-        //  Log.d(TAG, calendar2.getTime().toString());
-        //  int fd2 = Integer.parseInt(getDate(calendar2.getTime()));
-        //  Log.d(TAG, "day is " + fd2);
 
         Intent intentAlarm = new Intent(this, AlarmReceiver.class);
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -228,7 +268,6 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         String formattedDate = df.format(time);
         return formattedDate;
     }
-
 
     //<editor-fold desc="Context Menu">
     @Override
@@ -306,73 +345,62 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
             Toast.makeText(this, "Copied " + sn, Toast.LENGTH_SHORT).show();
 
 
-
-    }else if(item.getTitle()=="Detail")
-
-    {
-        int id = (int) menuInfo.id;
-        Intent intent = new Intent(this, DetailFeesActivity.class);
-        intent.putExtra("ID", id);
-        startActivity(intent);
+        } else if (item.getTitle() == "Detail") {
+            int id = (int) menuInfo.id;
+            Intent intent = new Intent(this, DetailFeesActivity.class);
+            intent.putExtra("ID", id);
+            startActivity(intent);
 
 
-    } else if(item.getTitle()=="Reciept")
+        } else if (item.getTitle() == "Reciept") {
+            android.app.FragmentManager manager = getFragmentManager();
+            Bundle bundle = new Bundle();
+            DialogReciept dialog = new DialogReciept();
+            dialog.setArguments(bundle);
+            int id = (int) menuInfo.id;
+            bundle.putInt("ID", id);
 
-    {
-        android.app.FragmentManager manager = getFragmentManager();
-        Bundle bundle = new Bundle();
-        DialogReciept dialog = new DialogReciept();
-        dialog.setArguments(bundle);
-        int id = (int) menuInfo.id;
-        bundle.putInt("ID", id);
+            dialog.show(manager, "dialog");
 
-        dialog.show(manager, "dialog");
+        } else if (item.getTitle() == "Call") {
+            int custId = (int) menuInfo.id;
+            PersonInfo info = dbHendler.getCustInfo(custId);
+            String contact = info.getPhoneNumber();
 
-    } else if(item.getTitle()=="Call")
+            Intent i = new Intent(Intent.ACTION_DIAL);
+            i.setData(Uri.parse("tel:" + "+91" + contact));
+            startActivity(i);
 
-    {
-        int custId = (int) menuInfo.id;
-        PersonInfo info = dbHendler.getCustInfo(custId);
-        String contact = info.getPhoneNumber();
+        } else if (item.getTitle() == "MSO Server") {
+            int custId = (int) menuInfo.id;
+            String sn = dbHendler.getAssignedSN(this, custId);
+            Intent intent = new Intent(this, MQWebViewActivity.class);
+            intent.putExtra("CALLINGACTIVITY", "VIEWALL");
+            intent.putExtra("SN", sn);
+            startActivity(intent);
 
-        Intent i = new Intent(Intent.ACTION_DIAL);
-        i.setData(Uri.parse("tel:" + "+91" + contact));
-        startActivity(i);
+        } else if (item.getTitle() == "Message") {
+            int custId = (int) menuInfo.id;
+            PersonInfo info = dbHendler.getCustInfo(custId);
+            String name = info.getName();
+            String mobNo = info.getPhoneNumber();
 
-    } else if(item.getTitle()=="MSO Server")
+            int balance = info.get_balance();
+            String y = "";
+            List<Fees> detail = dbHendler.getFeesForMsg(custId);
 
-    {
-        int custId = (int) menuInfo.id;
-        String sn = dbHendler.getAssignedSN(this, custId);
-        Intent intent = new Intent(this, MQWebViewActivity.class);
-        intent.putExtra("CALLINGACTIVITY", "VIEWALL");
-        intent.putExtra("SN", sn);
-        startActivity(intent);
+            for (Fees fees : detail) {
 
-    } else if(item.getTitle()=="Message")
+                String x = "Rs." + fees.getFees() + " " + fees.getDate() + ", ";
+                //    Log.d("single entry ", x);
+                y = y.concat(x);
+            }
+            String z = "Payment due Rs. " + balance + ", " + y;
 
-    {
-        int custId = (int) menuInfo.id;
-        PersonInfo info = dbHendler.getCustInfo(custId);
-        String name = info.getName();
-        String mobNo = info.getPhoneNumber();
-
-        int balance = info.get_balance();
-        String y = "";
-        List<Fees> detail = dbHendler.getFeesForMsg(custId);
-
-        for (Fees fees : detail) {
-
-            String x = "Rs." + fees.getFees() + " " + fees.getDate() + ", ";
-            //    Log.d("single entry ", x);
-            y = y.concat(x);
         }
-        String z = "Payment due Rs. " + balance + ", " + y;
-
-    }
 
         return true;
-}
+    }
 
 
     public void send(String detail, String mobNo) {

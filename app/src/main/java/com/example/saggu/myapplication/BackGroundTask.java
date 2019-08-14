@@ -18,7 +18,7 @@ public class BackGroundTask extends AsyncTask<String[], Integer, Void> {
     String TAG = "AsyncTask ";
     // ArrayList<STB> uploadSTB;
     private ProgressDialog progressDialog;
-    int rowcount=0;
+    int rowcount = 0;
 
     public BackGroundTask(Context context) {
         this.context = context;
@@ -33,7 +33,7 @@ public class BackGroundTask extends AsyncTask<String[], Integer, Void> {
     protected void onPreExecute() {
         progressDialog = new ProgressDialog(context);
         progressDialog.setTitle("Wait..");
-        progressDialog.setMessage("Wait...Reading Data");
+        //progressDialog.setMessage("Wait...Reading Data");
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setIndeterminate(false);
         progressDialog.show();
@@ -41,9 +41,8 @@ public class BackGroundTask extends AsyncTask<String[], Integer, Void> {
 
     @Override
     protected Void doInBackground(String[]... params) {
-
         String[] rows = params[0]; //get passed array from params
-         rowcount = rows.length;
+        rowcount = rows.length;
 
         //get the rows form array
         for (int i = 0; i < rows.length; i++) {
@@ -63,35 +62,38 @@ public class BackGroundTask extends AsyncTask<String[], Integer, Void> {
 
                 // Publish the async task progress
                 // Added 1, because index start from 0
-                 publishProgress(i);
-                // publishProgress((int) (((rowcount + 1) / (float) rowcount) * 100));
+                publishProgress(i);
+                if (i > rowcount - 10) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
 
             } catch (NumberFormatException ex) {
                 Log.e(TAG, "parseStringBuilder STB: NUMBERFORMATEXCEPTION " + ex.getMessage());
             } catch (SQLiteConstraintException ex) {
-                //Toast.makeText(context, ""+ex.toString(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "doInBackground: " + ex.toString());
             }
         }
-
-
         return null;
-
     }
-
 
     @Override
     protected void onProgressUpdate(Integer... progress) {
         Log.d(TAG, "onProgressUpdate: called");
         super.onProgressUpdate(progress);
-         progressDialog.setMessage("Inserting "+progress[0]+" of "+rowcount);
+        progressDialog.setMessage("Inserting " + progress[0] + " of " + rowcount);
         //progressDialog.setProgress(progress[0]);
-
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
         progressDialog.dismiss();
+        Toast.makeText(context, rowcount + " Records Inserted", Toast.LENGTH_SHORT).show();
+
     }
 
 }

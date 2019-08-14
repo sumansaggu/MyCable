@@ -1,7 +1,9 @@
 package com.example.saggu.myapplication;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
@@ -138,13 +140,34 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
                         //execute method to read exel data
                         //  BackGroundTask backGroundTask = new BackGroundTask(this);
                         //  backGroundTask.execute(this,readExelDataCustmer(lastDirectory));
-                        readExelDataSTB(lastDirectory);
+
+
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which){
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        //Yes button clicked
+                                        readExelDataSTB(lastDirectory);
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //No button clicked
+                                        break;
+                                }
+                            }
+                        };
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ImportActivity.this);
+                        builder.setMessage("Are you sure to insert data?").setPositiveButton("Yes", dialogClickListener)
+                                .setNegativeButton("No", dialogClickListener).show();
+
 
                     } else {
                         count++;
                         pathHistory.add(count, (String) parent.getItemAtPosition(position));
                         checkInternalStorage();
-                        Log.d(TAG, "lvInternalstorage: " + pathHistory.get(count));
+                        Log.d(TAG, "lv   Internalstorage: " + pathHistory.get(count));
                     }
                 }
             });
@@ -199,6 +222,9 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
             Log.e(TAG, "readExelData: Error reading inputstream " + ex.getMessage());
         }
     }
+
+
+
 
     //method for parsing data and storing in ArrayList<ImportedValues>
     private void parseStringBuilderCust(StringBuilder mStingBuilder) {
@@ -275,7 +301,7 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 Log.d(TAG, "readExelData: " + sb.toString());
                 parseStringBuilderSTB(sb);
-               // toast("Upload Success");
+                // toast("Upload Success");
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
@@ -293,8 +319,8 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
         String[] rows = mStingBuilder.toString().split("%"); //try to pass this array for asycTaks
 
         BackGroundTask backGroundTask = new BackGroundTask(this);
-       backGroundTask.execute(rows); // Array passed as parameter to asyctask
-       // BgTask bgTask =new BgTask();
+        backGroundTask.execute(rows); // Array passed as parameter to asyctask
+        // BgTask bgTask =new BgTask();
         //bgTask.execute(rows);
 
 
@@ -415,73 +441,6 @@ public class ImportActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-  public class BgTask extends AsyncTask<String[],Integer,Void>{
-
-      @Override
-      protected void onPreExecute() {
-          super.onPreExecute();
-          progressDialog = new ProgressDialog(ImportActivity.this);
-          progressDialog.setTitle("Wait..");
-          progressDialog.setMessage("Wait...Reading Data");
-          progressDialog.setCanceledOnTouchOutside(false);
-          progressDialog.setIndeterminate(false);
-          progressDialog.show();
-      }
-
-      @Override
-      protected Void doInBackground(String[]... params) {
-
-          String[] rows = params[0]; //get passed array from params
-          int rowcount =rows.length;
-
-          //get the rows form array
-          for (int i = 0; i < rows.length; i++) {
-              //split the columns of rows
-              String[] columns = rows[i].split(",");
-              //use try catch to make sure there are no "" that try to parse into doubles.
-              try {
-                  String sn = columns[0];
-                  String vc_mac = columns[1];
-                  String status = "ACTIVE";
-                  String cellInfo = "Rows.." + i + " | " + sn + " | " + vc_mac + " | ";
-                  Log.d(TAG, "parseStringBuilderCust: data from row: " + cellInfo);
-
-                  //    add the data to ArrayList only for log purpose
-                  //   uploadSTB.add(new STB(sn, vc_mac));
-                  dbHendler.AddNewStb(new STB(sn,vc_mac,status));
-
-                  // Publish the async task progress
-                  // Added 1, because index start from 0
-                  publishProgress(i);
-                //  publishProgress((int) (((rowcount+1) / (float) rowcount) * 100));
-
-
-              } catch (NumberFormatException ex) {
-                  Log.e(TAG, "parseStringBuilder STB: NUMBERFORMATEXCEPTION " + ex.getMessage());
-              } catch (SQLiteConstraintException ex) {
-                  //Toast.makeText(context, ""+ex.toString(), Toast.LENGTH_SHORT).show();
-              }
-          }
-
-
-          return null;
-
-      }
-
-
-      @Override
-      protected void onProgressUpdate(Integer... progress) {
-          Log.d(TAG, "onProgressUpdate: called");
-         progressDialog.setMessage(""+progress[0]);
-        //  progressDialog.setProgress(progress[0]);
-
-      }
-
-      @Override
-      protected void onPostExecute(Void aVoid) {
-          progressDialog.dismiss();
-      }
-  }
 
 }
 
