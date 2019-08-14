@@ -19,7 +19,6 @@
         android:id="@+id/pName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
@@ -72,15 +71,13 @@
 
 
         android:layout_below="@+id/textView5"
-        android:layout_alignStart="@+id/textView"
-        android:layout_alignLeft="@+id/textView"
-        android:layout_marginStart="253dp"
-        android:layout_marginLeft="253dp"
-
-        android:layout_marginTop="2dp"
-        android:text="Bal:  Rs."
-        tools:layout_editor_absoluteX="201dp"
-        tools:layout_editor_absoluteY="60dp" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="84dp"
+        android:layout_marginRight="93dp"
+        android:text="Bal:    Rs."
+         />
 
     <TextView
         android:id="@+id/cBalance"
@@ -90,21 +87,24 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="1dp"
-        android:layout_marginEnd="21dp"
-        android:layout_marginRight="21dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
         android:text="0000" />
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_below="@+id/pName"
         android:layout_alignTop="@+id/textView2"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="18dp"
-        android:layout_marginEnd="69dp"
-        android:layout_marginRight="69dp"
+
+
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="83dp"
+        android:layout_marginRight="83dp"
         android:text="Fees:  Rs." />
 
     <TextView
@@ -116,10 +116,10 @@
         android:layout_alignTop="@+id/textView5"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="1dp"
-        android:layout_marginEnd="21dp"
-        android:layout_marginRight="21dp"
-        android:text="280" />
+        android:layout_marginTop="-1dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:text="2800" />
 
     <TextView
         android:id="@+id/vc_mac"
