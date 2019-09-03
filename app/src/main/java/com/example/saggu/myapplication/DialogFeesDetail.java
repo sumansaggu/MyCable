@@ -81,13 +81,13 @@ public class DialogFeesDetail extends DialogFragment implements View.OnClickList
                     //  DbHendler.KEY_NAME,
                     //  DbHendler.KEY_PHONE_NO,
 
-                    DbHendler.KEY_RECIEPT,
+                    DbHendler.KEY_DEBIT,
                     DbHendler.KEY_DATE,
                     DbHendler.KEY_REMARK
             };
             int[] boundTo = new int[]{
 
-                    R.id.feesInList,
+                    R.id.credit,
                     R.id.dateInList,
                     R.id.remarkInList
             };

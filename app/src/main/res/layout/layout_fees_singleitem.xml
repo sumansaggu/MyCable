@@ -38,7 +38,7 @@
         android:layout_marginTop="0dp">
 
         <TextView
-            android:id="@+id/feesInList"
+            android:id="@+id/credit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
@@ -50,7 +50,7 @@
             android:layout_marginLeft="11dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="11dp"
-            android:text="Fees" />
+            android:text="Cr." />
     </RelativeLayout>
 
     <RelativeLayout
@@ -62,11 +62,11 @@
         android:layout_toEndOf="@+id/feesbox">
 
         <TextView
-            android:id="@+id/lastbalInList"
+            android:id="@+id/debit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="lbal" />
+            android:text="Dr." />
 
 
     </RelativeLayout>
@@ -80,11 +80,11 @@
         android:layout_toEndOf="@+id/feesbox">
 
         <TextView
-            android:id="@+id/curBalInList"
+            android:id="@+id/BalInList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="cbal" />
+            android:text="Bal." />
 
 
     </RelativeLayout>

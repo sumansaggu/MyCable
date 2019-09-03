@@ -42,7 +42,7 @@ public class STBRecord extends AppCompatActivity {
         setContentView(R.layout.activity_stbrecord);
         dbHendler = new DbHendler(this, null, null, 1);
         listViewStb = (ListView) findViewById(R.id.list_view_stb);
-        radioButton = (RadioButton) findViewById(R.id.radioBtn);
+        radioButton = (RadioButton) findViewById(R.id.radioBtnReciept);
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         totalSTBs = (TextView) findViewById(R.id.total_stbs);
         setSupportActionBar(toolbar);
@@ -246,7 +246,7 @@ public class STBRecord extends AppCompatActivity {
             TextView vc = (TextView) view.findViewById(R.id.stb_vc);
             TextView id = (TextView) view.findViewById(R.id.stbID);
             TextView sts = (TextView) view.findViewById(R.id.stb_status);
-            RadioButton radiobtn = (RadioButton) view.findViewById(R.id.radioBtn);
+            RadioButton radiobtn = (RadioButton) view.findViewById(R.id.radioBtnReciept);
             radiobtn.setVisibility(View.INVISIBLE);
 
             // Extract properties from cursor
@@ -265,7 +265,7 @@ public class STBRecord extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
-            RadioButton radiobtn = (RadioButton) view.findViewById(R.id.radioBtn);
+            RadioButton radiobtn = (RadioButton) view.findViewById(R.id.radioBtnReciept);
             radiobtn.setVisibility(View.INVISIBLE);
             return view;
         }

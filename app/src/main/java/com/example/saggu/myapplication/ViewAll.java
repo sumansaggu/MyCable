@@ -203,6 +203,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
 
         //  scheduleAlarm();
         checkDate();
+        dbHendler.getPackListForOnSTB(1);
     }
 
 
@@ -215,8 +216,8 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         Log.d(TAG, "checkDate: ");
         Log.d(TAG, "Day is " + date);
         String lastBalanceUpdate=null;
-        if (date == 14)
-        //(date == 1 && flag.equals(notDone))
+        if //(date == 1)
+         (date < 5 && flag.equals(notDone))
         {
             lastBalanceUpdate=  dbHendler.checkLastMonthlyUpdate(context);// will check last monthly operation performed date
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -242,7 +243,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
             builder.setMessage("Update monthly Fees?? Last Updated on "+ lastBalanceUpdate).setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show();
         }
-        if (date > 1 && flag.equals(done)) {
+        if (date > 5 && flag.equals(done)) {
             dbHendler.monthFlagChange(notDone);
             String fl = dbHendler.monthFlag();
             Log.d(TAG, "flag changed to " + fl);
@@ -565,7 +566,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
                     R.id.pName,
                     R.id.pMob,
                     R.id.cNo,
-                    R.id.cFees,
+                    R.id.cRent,
                     R.id.cBalance,
                     R.id.vc_mac,
                     R.id.cStatus,
@@ -609,7 +610,7 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
         TextView conNo = (TextView) view.findViewById(R.id.cNo);
         TextView sn = (TextView) view.findViewById(R.id.vc_mac);
         TextView status = (TextView) view.findViewById(R.id.cStatus);
-        TextView fees = (TextView) view.findViewById(R.id.cFees);
+        TextView fees = (TextView) view.findViewById(R.id.cRent);
         TextView balance = (TextView) view.findViewById(R.id.cBalance);
         TextView nickname = (TextView) view.findViewById(R.id.txtnickname);
 

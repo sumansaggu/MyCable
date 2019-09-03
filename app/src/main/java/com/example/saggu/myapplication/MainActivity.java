@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        signIn();
+      //  signIn();
         if (checkApi() >= 23) {
             //  permission();
             checkAndRequestPermissions();
@@ -220,6 +220,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         oldp = data;
         if (oldp.equals(null)||oldp.equals("")){
             Toast.makeText(this, " Password is not set, press GO button ", Toast.LENGTH_SHORT).show();
+           // goToViewAll(View view);
+
         }
 
     }

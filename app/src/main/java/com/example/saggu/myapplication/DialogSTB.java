@@ -54,7 +54,7 @@ public class DialogSTB extends DialogFragment implements View.OnClickListener {
         listViewStb.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RadioButton Rbutton = (RadioButton) view.findViewById(R.id.radioBtn);
+                RadioButton Rbutton = (RadioButton) view.findViewById(R.id.radioBtnReciept);
                 checkedId = id;
                 ok.setEnabled(true);
 
@@ -214,7 +214,7 @@ public class DialogSTB extends DialogFragment implements View.OnClickListener {
             // Find fields to populate in inflated template
             TextView sntxt = (TextView) view.findViewById(R.id.stb_sn);
             TextView vctxt = (TextView) view.findViewById(R.id.stb_vc);
-            RadioButton Rbutton = (RadioButton) view.findViewById(R.id.radioBtn);
+            RadioButton Rbutton = (RadioButton) view.findViewById(R.id.radioBtnReciept);
             TextView stbidtxt = (TextView) view.findViewById(R.id.stbID);
 
             // Extract properties from cursor

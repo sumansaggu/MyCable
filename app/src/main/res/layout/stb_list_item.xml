@@ -86,7 +86,7 @@
     <RadioButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/radioBtn"
+        android:id="@+id/radioBtnReciept"
         android:focusableInTouchMode="true"
         android:focusable="false"
         android:clickable="false"

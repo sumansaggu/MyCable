@@ -8,7 +8,9 @@ public class Fees {
     private int _id;
     private int _no;
     private String _date;
-    private int _reciept;
+    private int _amount;
+    private int _credit;
+    private int _debit;
     private int _lBalance;
     private int _curBalance;
 
@@ -25,23 +27,23 @@ public class Fees {
 
         this._no = no;
         this._id = id;
-        this._reciept = fees;
+        this._amount = fees;
         this._date = date;
     }
 
     public Fees(int id, int fees, String date) {
 
         this._id = id;
-        this._reciept = fees;
+        this._amount = fees;
         this._date = date;
     }
 
 
 
-    public Fees(int _id, String _date, int _reciept, int _lBalance, int _curBalance, String _remark) {
+    public Fees(int _id, String _date, int _amount,int _lBalance, int _curBalance, String _remark) {
         this._id = _id;
         this._date = _date;
-        this._reciept = _reciept;
+        this._amount = _amount;
         this._lBalance = _lBalance;
         this._curBalance = _curBalance;
         this._remark = _remark;
@@ -57,7 +59,7 @@ public class Fees {
     }
 
     public int getFees() {
-        return this._reciept;
+        return this._amount;
     }
 
     public String getDate() {
@@ -86,7 +88,7 @@ public class Fees {
     }
 
     public void setFees(int fees) {
-        this._reciept = fees;
+        this._amount = fees;
     }
 
     public void setDate(String date) {

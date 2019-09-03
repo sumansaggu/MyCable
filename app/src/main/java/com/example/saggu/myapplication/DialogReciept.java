@@ -10,11 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,22 +39,37 @@ public class DialogReciept extends DialogFragment implements View.OnClickListene
     TextView date;
     EditText remark;
     Button Ok, Cancel;
-    CheckBox smsCheckbox,printCheckbox;
+    CheckBox smsCheckbox, printCheckbox;
+    RadioGroup radioGroupRcptDisc;
+    RadioButton radioBtnCr, radioBtnDr, radioBtnReciept, radioBtnDiscount;
     String phoneno;
-
-
     int id;
+    String entryCrOrDr = "credit";
+    String entryRcptOrDisc = "reciept";
 
-
+    // TODO: 14-08-2019 add debit,credit,reciept,discount option
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_layout, null);
         Ok = (Button) view.findViewById(R.id.buttonYes);
         Cancel = (Button) view.findViewById(R.id.buttonNo);
-
         Ok.setOnClickListener(this);
         Cancel.setOnClickListener(this);
+
+
+        radioGroupRcptDisc = view.findViewById(R.id.radioGrpRcptDisc);
+        radioBtnCr = view.findViewById(R.id.radioBtnCredit);
+        radioBtnCr.setOnClickListener(this);
+        radioBtnDr = view.findViewById(R.id.radioBtnDebit);
+        radioBtnDr.setOnClickListener(this);
+
+
+        radioBtnReciept = view.findViewById(R.id.radioBtnReciept);
+        radioBtnReciept.setOnClickListener(this);
+        radioBtnDiscount = view.findViewById(R.id.radioBtnDiscount);
+        radioBtnDiscount.setOnClickListener(this);
+
 
         fees_dailog = (TextView) view.findViewById(R.id.fees_dialog);
         balance_dialog = (TextView) view.findViewById(R.id.balance_dialog);
@@ -67,10 +83,8 @@ public class DialogReciept extends DialogFragment implements View.OnClickListene
         remark = (EditText) view.findViewById(R.id.remarksEditText);
         smsCheckbox = view.findViewById(R.id.sendSMScheckBox);
         smsCheckbox.setOnClickListener(this);
-        printCheckbox= view.findViewById(R.id.printcheckBox);
+        printCheckbox = view.findViewById(R.id.printcheckBox);
         printCheckbox.setOnClickListener(this);
-
-
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         Bundle bundle = getArguments();
         id = bundle.getInt("ID");
@@ -79,20 +93,42 @@ public class DialogReciept extends DialogFragment implements View.OnClickListene
         dbHendler = new DbHendler(getActivity(), null, null, 1);
         getinformation();
         getDate();
-
+        Log.d(TAG, "onCreateView: " + entryCrOrDr);
+        Log.d(TAG, "onCreateView: " + entryRcptOrDisc);
         return view;
     }
 
+    public void showKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getView().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+    }
 
     public void hideKeyboard() {
-
         InputMethodManager imm = (InputMethodManager) getView().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
     }
 
-
     @Override
     public void onClick(View v) {
+        //  Log.d(TAG, "onClick: "+ entryCrOrDr +"---"+entryRcptOrDisc);
+        if (v.getId() == R.id.radioBtnCredit) {
+            radioGroupRcptDisc.setVisibility(View.VISIBLE);
+            entryCrOrDr = "credit";
+            Log.d(TAG, "onClick: " + entryCrOrDr);
+        }
+        if (v.getId() == R.id.radioBtnDebit) {
+            radioGroupRcptDisc.setVisibility(View.INVISIBLE);
+            entryCrOrDr = "debit";
+            Log.d(TAG, "onClick: " + entryCrOrDr);
+        }
+        if (v.getId() == R.id.radioBtnReciept) {
+            entryRcptOrDisc = "reciept";
+            Log.d(TAG, "onClick: " + entryRcptOrDisc);
+        }
+        if (v.getId() == R.id.radioBtnDiscount) {
+            entryRcptOrDisc = "discount";
+            Log.d(TAG, "onClick: " + entryRcptOrDisc);
+        }
         if (v.getId() == R.id.date) {
             hideKeyboard();
             pickDate();
@@ -143,30 +179,36 @@ public class DialogReciept extends DialogFragment implements View.OnClickListene
         int lbalance = personInfo.get_balance();
         Log.d(TAG, "" + lbalance);
 
-        String Reciept = reciept_dialog.getText().toString().trim();
-        if (Reciept.equals("")) {
+        String Amount = reciept_dialog.getText().toString().trim();
+        if (Amount.equals("")) {
             Toast.makeText(this.getActivity(), "Enter the amount", Toast.LENGTH_SHORT).show();
             return;
         } else {
             int id = this.id;
-            int reciept = Integer.parseInt(Reciept);
+            int amount = Integer.parseInt(Amount);
             String datefromEditText = date.getText().toString().trim();
-            Log.d(TAG, "" + (lbalance - reciept));
-            int curBalance = lbalance - reciept;
+            Log.d(TAG, "" + (lbalance - amount));
+            int curBalance=0;
+            if(entryCrOrDr.equals("debit")){
+                curBalance = lbalance + amount;
+            }
+            if(entryCrOrDr.equals("credit")){
+                curBalance = lbalance - amount;
+            }
+
             String name = personInfo.getName();
             String remark = this.remark.getText().toString();
-
             dbHendler.updateBalance(new PersonInfo(id, curBalance));  //new balance to customer table
-            dbHendler.addFees(new Fees(id, datefromEditText, reciept,lbalance,curBalance,  remark));//fees recieved and date to fees table
+            dbHendler.addFees(new Fees(id, datefromEditText, amount, lbalance, curBalance, remark), entryCrOrDr, entryRcptOrDisc);//fees recieved and date to fees table
 
             if (smsCheckbox.isChecked()) {
                 Log.d(TAG, "checkbox checked");
-                String smsBody="Dear Customer.\nYour Last CableTV Balance was " + lbalance+ ".\nRecived: "+reciept+". Current Balance is "+curBalance+"\nThank you";
-                SmsManager.getDefault().sendTextMessage(phoneno,null,smsBody,null,null);
+                String smsBody = "Dear Customer.\nYour Last CableTV Balance was " + lbalance + ".\nRecived: " + amount + ". Current Balance is " + curBalance + "\nThank you";
+                SmsManager.getDefault().sendTextMessage(phoneno, null, smsBody, null, null);
             }
             ViewAll activity = (ViewAll) getActivity();
             activity.refreshListView();
-            Toast.makeText(this.getActivity(), "Added Rs. " + reciept + " to " + name, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getActivity(), "Added Rs. " + amount + " to " + name, Toast.LENGTH_SHORT).show();
             reciept_dialog.setText("");
             Ok.setEnabled(false);
             Cancel.setText("Back");

@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -98,7 +97,7 @@ public class BtwTwoDates extends AppCompatActivity implements Communicator {
 
                     DbHendler.KEY_NAME,
                     DbHendler.KEY_DATE,
-                    DbHendler.KEY_RECIEPT,
+                    DbHendler.KEY_DEBIT,
                     //  "lBalance",
                     "curBalance",
                     DbHendler.KEY_REMARK

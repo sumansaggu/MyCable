@@ -1,19 +1,14 @@
 package com.example.saggu.myapplication;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -77,14 +72,16 @@ public class DbHendler extends SQLiteOpenHelper {
     public static final String KEY_SN = "serialNo";// stb record
     public static final String KEY_VC = "vcNo";
     public static final String KEY_STATUS = "status";
-    public static final String KEY_ASSIGNED = "assigned";
+    public static final String KEY_ASSIGNED = "customerId";
     public static final String KEY_STBEXTRA1 = "col_6";
     public static final String KEY_STBEXTRA2 = "col_7";
 
 
     public static final String KEY_NO = "NO";                //for fees table
-    public static final String KEY_RECIEPT = "reciept";
-    public static final String KEY_DATE = "recieved_on";
+    public static final String KEY_DEBIT = "debit";
+    public static final String KEY_CREDIT = "credit";
+    //public static final String KEY_BALANCE = "debit";
+    public static final String KEY_DATE = "date";
     public static final String KEY_REMARK = "remark";
     public static final String KEY_FEESEXTRA1 = "col_6";
     public static final String KEY_FEESEXTRA2 = "col_7";
@@ -136,7 +133,7 @@ public class DbHendler extends SQLiteOpenHelper {
     String CREATE_FEES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_FEES + "("
             + KEY_NO + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_ID + " INTEGER, "
-            + KEY_RECIEPT + " INTEGER, "
+            + KEY_DEBIT + " INTEGER, "
             + KEY_DATE + " DATETIME, "
             + KEY_REMARK + " TEXT,  "
             + KEY_FEESEXTRA1 + " TEXT DEFAULT 'N/A', "
@@ -247,8 +244,8 @@ public class DbHendler extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + TABLE_PERSON_INFO + "(" + KEY_ID + ", " + KEY_NAME + ", " + KEY_PHONE_NO + ", " + KEY_CUST_NO + ", " + KEY_FEES + ", " + KEY_BALANCE + ", " + KEY_AREA + ", " + KEY_STBID + ", " + KEY_PERSONEXTRA1 + ", " + KEY_PERSONEXTRA2 + ", " + KEY_NICKNAME + ", " + KEY_PERSONEXTRA4 + ", " + KEY_PERSONEXTRA5 + ", " + KEY_PERSONEXTRA6 + ") " +
                 "SELECT " + KEY_ID + ", " + KEY_NAME + ", " + KEY_PHONE_NO + ", " + KEY_CUST_NO + ", " + KEY_FEES + ", " + KEY_BALANCE + ", " + KEY_AREA + ", " + KEY_STBID + ", " + KEY_PERSONEXTRA1 + ", " + KEY_PERSONEXTRA2 + ", " + KEY_NICKNAME + ", " + KEY_PERSONEXTRA4 + ", " + KEY_PERSONEXTRA5 + ", " + KEY_PERSONEXTRA6 + " FROM TempOldTablePerson");
 
-        db.execSQL("INSERT INTO " + TABLE_FEES + "(" + KEY_NO + ", " + KEY_ID + ", " + KEY_RECIEPT + ", " + KEY_DATE + ", " + KEY_REMARK + ", " + KEY_FEESEXTRA1 + ", " + KEY_FEESEXTRA2 + ") " +
-                "SELECT " + KEY_NO + ", " + KEY_ID + ", " + KEY_RECIEPT + ", " + KEY_DATE + ", " + KEY_REMARK + ", " + KEY_FEESEXTRA1 + ", " + KEY_FEESEXTRA2 + "  FROM TempOldTableFees");
+        db.execSQL("INSERT INTO " + TABLE_FEES + "(" + KEY_NO + ", " + KEY_ID + ", " + KEY_DEBIT + ", " + KEY_DATE + ", " + KEY_REMARK + ", " + KEY_FEESEXTRA1 + ", " + KEY_FEESEXTRA2 + ") " +
+                "SELECT " + KEY_NO + ", " + KEY_ID + ", " + KEY_DEBIT + ", " + KEY_DATE + ", " + KEY_REMARK + ", " + KEY_FEESEXTRA1 + ", " + KEY_FEESEXTRA2 + "  FROM TempOldTableFees");
 
         db.execSQL("INSERT INTO " + TABLE_STB + "(" + KEY_ID + ", " + KEY_SN + ", " + KEY_VC + ", " + KEY_STATUS + ", " + KEY_ASSIGNED + ", " + KEY_STBEXTRA1 + ", " + KEY_STBEXTRA2 + ") " +
                 "SELECT " + KEY_ID + ", " + KEY_SN + ", " + KEY_VC + ", " + KEY_STATUS + ", " + KEY_ASSIGNED + ", " + KEY_STBEXTRA1 + ", " + KEY_STBEXTRA2 + "  FROM TempOldTableSTB");
@@ -476,7 +473,7 @@ public class DbHendler extends SQLiteOpenHelper {
 
     //endregion
     public Cursor listforBtwtwoDates(String from, String to) {
-        String selectQuery = "SELECT " + TABLE_FEES + "." + KEY_ID + ", " + KEY_RECIEPT + ",curBalance, " + KEY_DATE + ", " + KEY_REMARK + ", " + KEY_NAME + ", " + TABLE_PERSON_INFO + "._id" +
+        String selectQuery = "SELECT " + TABLE_FEES + "." + KEY_ID + ", " + KEY_DEBIT + ",curBalance, " + KEY_DATE + ", " + KEY_REMARK + ", " + KEY_NAME + ", " + TABLE_PERSON_INFO + "._id" +
                 " FROM " + TABLE_FEES +
                 " LEFT JOIN " + TABLE_PERSON_INFO + " ON " + TABLE_PERSON_INFO + "._id =" + TABLE_FEES + "._id" +
                 " WHERE " + KEY_DATE + " BETWEEN '" + from + "' AND '" + to + "'";
@@ -524,7 +521,7 @@ public class DbHendler extends SQLiteOpenHelper {
         String custmor = "" + id;
         Log.d(TAG, custmor);
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = {KEY_NO, KEY_ID, KEY_DATE, KEY_RECIEPT, "lBalance", "curBalance", KEY_REMARK};
+        String[] columns = {KEY_NO, KEY_ID, KEY_DATE, KEY_DEBIT, "credit", "balance", KEY_REMARK};
         // String[] selArgs = {custmor};
 
         Cursor cursor = db.query(TABLE_FEES, columns, KEY_ID + " = '" + custmor + "'", null, null, null, KEY_DATE + " ASC");
@@ -541,14 +538,14 @@ public class DbHendler extends SQLiteOpenHelper {
     public List<Fees> getFeesForMsg(int id) {
         List<Fees> feesDetail = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = {KEY_NO, KEY_ID, KEY_DATE, KEY_RECIEPT, "lBalance", "curBalance", KEY_REMARK};
+        String[] columns = {KEY_NO, KEY_ID, KEY_DATE, KEY_DEBIT, "lBalance", "curBalance", KEY_REMARK};
         Cursor cursor = db.query(TABLE_FEES, columns, KEY_ID + " = '" + id + "'", null, null, null, KEY_DATE + " ASC");
 
         if (cursor.moveToFirst()) {
             do {
                 Fees fees = new Fees();
                 fees.setDate(cursor.getString(cursor.getColumnIndex(KEY_DATE)));
-                fees.setFees(cursor.getInt(cursor.getColumnIndex(KEY_RECIEPT)));
+                fees.setFees(cursor.getInt(cursor.getColumnIndex(KEY_DEBIT)));
                 feesDetail.add(fees);
             } while (cursor.moveToNext());
         } else Log.d(TAG, "getFeesForMsg: cursor is null");
@@ -670,15 +667,24 @@ public class DbHendler extends SQLiteOpenHelper {
     }
 
     //region ADD FEES TO FEES TABLE
-    public void addFees(Fees fees) {
+    public void addFees(Fees fees, String entryCrOrDr, String entryRcptOrDisc) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_ID, fees.getId());
         values.put(KEY_DATE, fees.getDate());
-        values.put(KEY_RECIEPT, fees.getFees());
-        values.put("lBalance", fees.get_lBalance());
-        values.put("curBalance", fees.get_curBalance());
+        if (entryCrOrDr.equals("credit") && entryRcptOrDisc.equals("reciept")) {
+            values.put(KEY_CREDIT, fees.getFees());
+        }
+        if (entryCrOrDr.equals("credit") && entryRcptOrDisc.equals("discount")) {
+            values.put(KEY_CREDIT, fees.getFees());
+        }
+        if (entryCrOrDr.equals("debit")) {
+            values.put(KEY_DEBIT, fees.getFees());
+        }
+        //  values.put(KEY_BALANCE, fees.get_lBalance());
+        values.put("balance", fees.get_curBalance());
         values.put(KEY_REMARK, fees.getRemark());
+        values.put("mode", entryCrOrDr);
         db.insert(TABLE_FEES, null, values);
         db.close();
     }
@@ -1004,27 +1010,27 @@ public class DbHendler extends SQLiteOpenHelper {
     }
 
     public String checkLastMonthlyUpdate(Context Context) {
-        String monthEnded= null;
-        Date today =new Date();
+        String monthEnded = null;
+        Date today = new Date();
         long diffDays = 0;
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_EXTRAS;
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToLast()) {
             int id = (Integer.parseInt(cursor.getString(0)));
-             monthEnded = (cursor.getString(1));
+            monthEnded = (cursor.getString(1));
             try {
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(monthEnded);
-                long diff = today.getTime()- date.getTime();
-                diffDays = diff/(1000 * 60 * 60 * 24);
-                Log.d(TAG, "checkLastMonthlyUpdate: "+diffDays);
+                long diff = today.getTime() - date.getTime();
+                diffDays = diff / (1000 * 60 * 60 * 24);
+                Log.d(TAG, "checkLastMonthlyUpdate: " + diffDays);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            Toast.makeText(Context, "Month was ended at: "+monthEnded  , Toast.LENGTH_LONG).show();
+            Toast.makeText(Context, "Month was ended at: " + monthEnded, Toast.LENGTH_LONG).show();
         }
         cursor.close();
-         return monthEnded+" ("+diffDays+" Days ago)";
+        return monthEnded + " (" + diffDays + " Days ago)";
     }
     //endregion
 
@@ -1137,7 +1143,7 @@ public class DbHendler extends SQLiteOpenHelper {
             do {
                 int datecolumn = cursor.getColumnIndex(KEY_DATE);
                 String date = cursor.getString(datecolumn);
-                int feesColumn = cursor.getColumnIndex(KEY_RECIEPT);
+                int feesColumn = cursor.getColumnIndex(KEY_DEBIT);
                 int fees = cursor.getInt(feesColumn);
                 Log.d(TAG, "DATE: " + date + " " + "fees: " + fees);
                 sum = fees + sum;
@@ -1286,6 +1292,25 @@ public class DbHendler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void getPackListForOnSTB(int stbid) {
+        String selectQuery = "select pkgOnStb.stbid, pkgList.pkgname, pkgList.pkgid\n" +
+                "from pkgOnStb\n" +
+                "inner join pkgList\n" +
+                "on pkgOnStb.pkgId = pkgList.pkgid\n" +
+                "where pkgOnStb.stbid = "+stbid;
+        SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor !=null){
+            cursor.moveToFirst();
+            do{
+                String pkgname = cursor.getString(cursor.getColumnIndex("pkgname"));
+                Log.d(TAG, "getPackListForOnSTB: "+pkgname);
+            }while (cursor.moveToNext());
+        }
+
+
+    }
+
     public class BGTask extends AsyncTask<Void, Integer, Void> {
 
         ProgressDialog progressDialog;
@@ -1309,7 +1334,7 @@ public class DbHendler extends SQLiteOpenHelper {
             String selectQuery = "SELECT  * FROM " + TABLE_PERSON_INFO + " WHERE " + KEY_CONSTATUS + " = 'ACTIVE'";
             SQLiteDatabase db = DbHendler.this.getWritableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, null);
-             rowcount = cursor.getCount();
+            rowcount = cursor.getCount();
             int progress = 1;
             // looping through all rows and adding to list
             if (cursor.moveToFirst()) {
@@ -1327,7 +1352,7 @@ public class DbHendler extends SQLiteOpenHelper {
                     contentValues.put(KEY_BALANCE, k);
                     db.update(TABLE_PERSON_INFO, contentValues, KEY_ID + "=?", new String[]{String.valueOf(id)});
                     progress++;
-                    if(progress>(rowcount-10)){
+                    if (progress > (rowcount - 10)) {
                         try {
                             Thread.sleep(600);
                         } catch (InterruptedException e) {
@@ -1346,7 +1371,7 @@ public class DbHendler extends SQLiteOpenHelper {
         protected void onProgressUpdate(Integer... values) {
             Log.d(TAG, "onProgressUpdate: called");
             //  super.onProgressUpdate(progress);
-            progressDialog.setMessage("Updating Balance for customer " + values[0] + " of "+rowcount);
+            progressDialog.setMessage("Updating Balance for customer " + values[0] + " of " + rowcount);
         }
 
         @Override

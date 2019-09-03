@@ -6,10 +6,7 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -73,16 +70,16 @@ public class DetailFeesActivity extends AppCompatActivity implements View.OnClic
 
 
                     DbHendler.KEY_DATE,
-                    DbHendler.KEY_RECIEPT,
-                    "lBalance",
-                    "curBalance",
+                    DbHendler.KEY_DEBIT,
+                    "credit",
+                    "balance",
                     DbHendler.KEY_REMARK
             };
             int[] boundTo = new int[]{
                     R.id.dateInList,
-                    R.id.feesInList,
-                    R.id.lastbalInList,
-                    R.id.curBalInList,
+                    R.id.debit,
+                    R.id.credit,
+                    R.id.BalInList,
                     R.id.remarkInList
             };
             simpleCursorAdapter = new SimpleCursorAdapter(this,

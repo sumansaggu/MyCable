@@ -26,7 +26,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -55,6 +55,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
     DbHendler dbHendler;
     List<String> listID;
     List<String> listPW;
+    EditText searchInpage;
 
 
     @Override
@@ -65,6 +66,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
         setContentView(R.layout.activity_mqweb_view);
         dbHendler = new DbHendler(this, null, null, 1);
         toolbar = (Toolbar) findViewById(R.id.app_bar);
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("MQ");
@@ -72,6 +74,8 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         spinnerID = (Spinner) findViewById(R.id.spnrOracleID);
         spinnerID.setOnItemSelectedListener(this);
+        searchInpage =(EditText) findViewById(R.id.searchInWebPage);
+        searchInpage.addTextChangedListener(new myTextWatcher());
 
 
         //request desktopmode
@@ -87,7 +91,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
         Bundle bundle = getIntent().getExtras();
         Log.d(TAG, "onCreate: webactivity");
         //  loadShardPref();
-        isConnected(this);
+        //isConnected(this);
 
         if (bundle == null) {
             return;
@@ -135,7 +139,9 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
     public void findInPageprevious(View view){
         mywebView.findNext(false);
     }
-    private class textWatcher implements TextWatcher {
+
+
+    private class myTextWatcher implements TextWatcher {
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -352,6 +358,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
             progressBar.setVisibility(View.VISIBLE);
             Log.d(TAG, "onPageStarted: ");
             String currenturl = mywebView.getUrl();
+            Toast.makeText(MQWebViewActivity.this, "Loading "+currenturl, Toast.LENGTH_SHORT).show();
         }
 
 
