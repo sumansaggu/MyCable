@@ -203,7 +203,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
 
         //  scheduleAlarm();
         checkDate();
-        dbHendler.getPackListForOnSTB(1);
+       // dbHendler.getPackListOnSTB(1);
     }
 
 
@@ -280,6 +280,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         menu.add("Copy STB No.");
         menu.add("Call");
         menu.add("Message");
+        menu.add("View STB");
         menu.add("Start/Cut");
         menu.add("Edit");
         menu.add("Set STB");
@@ -293,7 +294,13 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         super.onContextItemSelected(item);
         // Get extra info about list item that was long-pressed
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-
+        if(item.getTitle()=="View STB"){
+            int custid = (int) menuInfo.id;
+            Log.d(TAG, "onContextItemSelected: View STB "+custid);
+            Intent intent = new Intent(this,StbForCustomer.class);
+            intent.putExtra("ID", custid);
+            startActivity(intent);
+        }
         if (item.getTitle() == "Delete") {
             DeleteAlert myAlert = new DeleteAlert();
             int custid = (int) menuInfo.id;

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -16,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1250,8 +1252,6 @@ public class DbHendler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return areaname;
-
-
     }
 
     public List<Area> getAllAreas() {
@@ -1286,29 +1286,106 @@ public class DbHendler extends SQLiteOpenHelper {
         return areaId;
     }
 
-
     public void createIDPWTable() {
         SQLiteDatabase db = this.getReadableDatabase();
         onCreate(db);
     }
 
-    public void getPackListForOnSTB(int stbid) {
-        String selectQuery = "select pkgOnStb.stbid, pkgList.pkgname, pkgList.pkgid\n" +
-                "from pkgOnStb\n" +
-                "inner join pkgList\n" +
-                "on pkgOnStb.pkgId = pkgList.pkgid\n" +
-                "where pkgOnStb.stbid = "+stbid;
+    public ArrayList<String> getSTBsForCustomer(int custId) {
+        //    Log.d(TAG, "getSTBsForCustomer: ");
+        ArrayList stbList = new ArrayList<String>();
+        String selectQuery = "SELECT * FROM stbRecord WHERE customerId = " + custId;
+        //  Log.d(TAG, "getSTBsForCustomer: " + selectQuery);
         SQLiteDatabase db = DbHendler.this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        if (cursor !=null){
-            cursor.moveToFirst();
-            do{
-                String pkgname = cursor.getString(cursor.getColumnIndex("pkgname"));
-                Log.d(TAG, "getPackListForOnSTB: "+pkgname);
-            }while (cursor.moveToNext());
+        String stbSerial;
+        if (cursor != null) {
+            if (cursor.getCount() < 1) {// if no stb is assigned
+                stbList.add("No STB with this Custmer");
+            } else {
+                cursor.moveToFirst();
+                do {
+                    stbSerial = cursor.getString(cursor.getColumnIndex("serialNo"));
+                    // String stbVCMac = cursor.getString(cursor.getColumnIndex("vcNo"));
+                    stbList.add(stbSerial);
+                    //     Log.d(TAG, "getSTBsForCustomer: " + stbSerial);
+
+                } while (cursor.moveToNext());
+            }
+        }
+        return stbList;
+    }
+
+
+
+    public String getVcMacNoWithSerialNo(String headerTitle) {
+        String selectQuery = "SELECT * FROM " + TABLE_STB + " WHERE " + KEY_SN + " = '" + headerTitle + "'";
+        SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+        String vcMac = null;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        //Log.d(TAG, "getVcMacNoWithSerialNo: "+cursor.getCount());
+        if (cursor != null) {
+            if (cursor.getCount() < 1) {
+                vcMac = "";
+            } else {
+                cursor.moveToFirst();
+                do {
+                    vcMac = cursor.getString(cursor.getColumnIndex("vcNo"));
+                    Log.d(TAG, "getPackListOnSTB: " + vcMac);
+                } while (cursor.moveToNext());
+
+            }
+        }
+        return vcMac;
+    }
+    public ArrayList<String> getPackListOnSTB(String stbsn) {
+        ArrayList<String> packList = new ArrayList<String>();
+
+        String query = "select stbRecord.serialNo, pkgOnStb.stbid, pkgList.pkgname, pkgList.pkgprice \n" +
+                "from stbRecord\n" +
+                "join pkgOnStb on pkgOnStb.stbid = stbRecord._id\n" +
+                "join pkgList  on pkgOnStb.pkgId = pkgList.pkgid\n" +
+                "where stbRecord.serialNo = " + "'" + stbsn + "'";
+
+        SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        double total=0.0;
+        if (cursor != null) {
+            Log.d(TAG, "getPackListOnSTB: cursor length" + cursor.getCount());
+            String pkgname;
+            if (cursor.getCount() < 1) {
+                packList.add("No pack added");
+            } else {
+                cursor.moveToFirst();
+                do {
+                    pkgname = cursor.getString(cursor.getColumnIndex("pkgname"));
+                    total += Double.parseDouble(cursor.getString(cursor.getColumnIndex("pkgprice")));
+                    packList.add(pkgname);
+                    Log.d(TAG, "getPackListOnSTB: " + pkgname);
+                } while (cursor.moveToNext());
+                packList.add("Total Price Rs: "+total);
+            }
         }
 
-
+        return packList;
+    }
+    public String getPackPrice(String childListPack) {
+        String query = "select * from pkgList where pkgname  = '" + childListPack + "' ";
+        SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+        String price = null;
+        Cursor cursor = db.rawQuery(query, null);
+        //Log.d(TAG, "getVcMacNoWithSerialNo: "+cursor.getCount());
+        if (cursor != null) {
+            if (cursor.getCount() < 1) {
+                price = "";
+            } else {
+                cursor.moveToFirst();
+                do {
+                    price = cursor.getString(cursor.getColumnIndex("pkgprice"));
+                    Log.d(TAG, "getPackListOnSTB: " + price);
+                } while (cursor.moveToNext());
+            }
+        }return price;
     }
 
     public class BGTask extends AsyncTask<Void, Integer, Void> {

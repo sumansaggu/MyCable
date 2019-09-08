@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import java.util.List;
 
-
 public class DetailFeesActivity extends AppCompatActivity implements View.OnClickListener {
     SimpleCursorAdapter simpleCursorAdapter;
     DbHendler dbHendler;
@@ -30,7 +29,6 @@ public class DetailFeesActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_fees_detail);
-
         Bundle bundle = getIntent().getExtras();
         id = bundle.getInt("ID");
 
