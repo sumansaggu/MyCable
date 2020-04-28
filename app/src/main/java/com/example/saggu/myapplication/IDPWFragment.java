@@ -1,11 +1,9 @@
 package com.example.saggu.myapplication;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +11,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 /**
  * Created by Saggu on 9/1/2017.
  */
 
 public class IDPWFragment extends DialogFragment {
 
-    String id, pw;
-    EditText idtxt, pwtxt;
+    String code,id, pw;
+    EditText codetxt,idtxt, pwtxt;
     Button okbtn;
     DbHendler dbHendler;
     int extra_id = 0;
@@ -34,6 +30,7 @@ public class IDPWFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.id_pw_add_edit_fragment, null);
         dbHendler = new DbHendler(this.getActivity(), null, null, 1);
+        codetxt = view.findViewById(R.id.code);
         idtxt = (EditText) view.findViewById(R.id.etxtID);
         pwtxt = (EditText) view.findViewById(R.id.etxtPW);
         okbtn = (Button) view.findViewById(R.id.btnIDPWFrag);
@@ -56,6 +53,7 @@ public class IDPWFragment extends DialogFragment {
                 Cursor cursor = dbHendler.getIDPWforEdit(extra_id);
                 if (cursor.moveToFirst()) {
                     do {
+                        codetxt.setText(cursor.getString(cursor.getColumnIndex(dbHendler.KEY_SERVERID)));
                         idtxt.setText(cursor.getString(cursor.getColumnIndex(dbHendler.KEY_USERID)));
                         pwtxt.setText(cursor.getString(cursor.getColumnIndex(dbHendler.KEY_USERPASSWORD)));
                         // Log.d(TAG, "getIDPWforEdit: "+list);
@@ -87,14 +85,14 @@ public class IDPWFragment extends DialogFragment {
 
 
     private void setIDPW() {
-
+        code = codetxt.getText().toString();
         id = idtxt.getText().toString();
         pw = pwtxt.getText().toString();
-        if (id.equals("") || pw.equals("")) {
+        if (code.equals("")|| id.equals("") || pw.equals("")) {
             Toast.makeText(getActivity(), "Enter proper ID and Password", Toast.LENGTH_SHORT).show();
             return;
         } else {
-            dbHendler.setIDPW(id, pw);
+            dbHendler.setIDPW(code,id, pw);
             Toast.makeText(getActivity(), "button clicked" + id + " " + pw, Toast.LENGTH_SHORT).show();
             IDPWActivity activity = (IDPWActivity) getActivity();
             activity.createList();

@@ -561,7 +561,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
                     //DbHendler.KEY_ID,
                     DbHendler.KEY_NAME,
                     DbHendler.KEY_PHONE_NO,
-                    DbHendler.KEY_CUST_NO,
+                    DbHendler.KEY_ROOT_NO,
                     DbHendler.KEY_FEES,
                     DbHendler.KEY_BALANCE,
                     DbHendler.KEY_SN,
@@ -626,7 +626,7 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
         //   int id = cursor.getInt(cursor.getColumnIndex(DbHendler.KEY_ID));
         String mname = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NAME));
         String mmobile = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_PHONE_NO));
-        String mconno = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_CUST_NO));
+        String mconno = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_ROOT_NO));
         String msn = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_SN));
         String mstatus = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_CONSTATUS));
         String mfees = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_FEES));
@@ -751,7 +751,7 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
 
         for (PersonInfo info : personInfos) {
             String log = "Id: " + info.getID() + " ,Name: " + info.getName() + " ,Phone: " + info.getPhoneNumber()
-                    + " Customer: " + info.get_cust_no() + " Fees: " + info.get_fees();
+                    + " Customer: " + info.get_rootNo() + " Fees: " + info.get_fees();
             // Writing Contacts to log
             Log.d("Name: ", log);
         }
@@ -765,7 +765,7 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
 
         for (PersonInfo info : personInfos) {
             String log = "Id: " + info.getID() + " ,Name: " + info.getName() + " ,Phone: " + info.getPhoneNumber()
-                    + " Customer: " + info.get_cust_no() + " Fees: " + info.get_fees() + " Balance: " + info.get_balance() + " Area: " + info.get_area();
+                    + " Customer: " + info.get_rootNo() + " Fees: " + info.get_fees() + " Balance: " + info.get_balance() + " Area: " + info.get_area();
             // Writing Contacts to log
             Log.d("Name: ", log);
         }
@@ -1096,7 +1096,7 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
         if (cursor.moveToFirst()) {
 
             do {
-                PdfPCell custno = new PdfPCell(new Paragraph(cursor.getString(cursor.getColumnIndex(DbHendler.KEY_CUST_NO))));
+                PdfPCell custno = new PdfPCell(new Paragraph(cursor.getString(cursor.getColumnIndex(DbHendler.KEY_ROOT_NO))));
                 PdfPCell name = new PdfPCell(new Paragraph(cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NAME))));
                 PdfPCell mobile = new PdfPCell(new Paragraph(cursor.getString(cursor.getColumnIndex(DbHendler.KEY_PHONE_NO))));
                 PdfPCell NoC = new PdfPCell(new Paragraph("1"));

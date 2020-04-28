@@ -30,7 +30,7 @@ public class CustAddEditActivity extends AppCompatActivity implements Communicat
 
     EditText person_name;
     EditText contact_no;
-    EditText cust_no;
+    EditText rootNo;
     EditText monthly_fees;
     EditText nickName;
     TextView dateTxtview;
@@ -67,7 +67,7 @@ public class CustAddEditActivity extends AppCompatActivity implements Communicat
         buttonAdd.setOnClickListener(this);
         //  viewAll = (Button) findViewById(R.id.buttonViewAll);
         // viewAll.setOnClickListener(this);
-        cust_no = (EditText) findViewById(R.id.cust_no);
+        rootNo = (EditText) findViewById(R.id.cust_no);
         monthly_fees = (EditText) findViewById(R.id.fees);
         balance_ = (EditText) findViewById(R.id.balance);
         nickName = (EditText) findViewById(R.id.etxtnickname);
@@ -127,7 +127,7 @@ public class CustAddEditActivity extends AppCompatActivity implements Communicat
         if (nName.equals("")) {
             nName = "N/A";
         }
-        String Custno = cust_no.getText().toString().trim();
+        String Custno = rootNo.getText().toString().trim();
         if (Custno.equals("")) {
             Toast.makeText(getApplicationContext(), "Enter the Customer No.", Toast.LENGTH_LONG).show();
             return;
@@ -156,7 +156,7 @@ public class CustAddEditActivity extends AppCompatActivity implements Communicat
         dbHendler.addPerson(new PersonInfo(name, no, custNo, fees, balance, areaId, date, nName), this);
         person_name.setText("");
         contact_no.setText("");
-        cust_no.setText("");
+        rootNo.setText("");
         monthly_fees.setText("");
         balance_.setText("");
         nickName.setText("");
@@ -200,7 +200,7 @@ public class CustAddEditActivity extends AppCompatActivity implements Communicat
         PersonInfo personInfo = dbHendler.getCustInfo(id);
         String name = personInfo.getName().toString().trim();
         String no = personInfo.getPhoneNumber().toString().trim();
-        float custNo = personInfo.get_cust_no();
+        float custNo = personInfo.get_rootNo();
         String cUSTnO = String.valueOf(custNo);
         int fees = personInfo.get_fees();
         String fEES = Integer.toString(fees);
@@ -212,7 +212,7 @@ public class CustAddEditActivity extends AppCompatActivity implements Communicat
         String area = dbHendler.getAreaName(areaID);
         person_name.setText(name);
         contact_no.setText(no);
-        cust_no.setText(cUSTnO);
+        rootNo.setText(cUSTnO);
         monthly_fees.setText(fEES);
         balance_.setText(bALANCE);
         nickName.setText(nName);
@@ -240,7 +240,7 @@ public class CustAddEditActivity extends AppCompatActivity implements Communicat
         if (nickname.equals("")) {
             nickname = "N/A";
         }
-        String Custno = cust_no.getText().toString().trim();
+        String Custno = rootNo.getText().toString().trim();
         if (Custno.equals("")) {
             Toast.makeText(getApplicationContext(), "Enter the Customer No.", Toast.LENGTH_LONG).show();
             return;
@@ -270,7 +270,7 @@ public class CustAddEditActivity extends AppCompatActivity implements Communicat
         dbHendler.updateInfo(new PersonInfo(id, name, no, custNo, fees, balance, areaId, date, nickname));
         person_name.setText("");
         contact_no.setText("");
-        cust_no.setText("");
+        rootNo.setText("");
         monthly_fees.setText("");
         balance_.setText("");
         nickName.setText("");

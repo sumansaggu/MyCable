@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -17,7 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,10 +53,10 @@ public class DbHendler extends SQLiteOpenHelper {
 
     public static final String KEY_NAME = "name";
     public static final String KEY_PHONE_NO = "phone_no";
-    public static final String KEY_CUST_NO = "cust_no";
+    public static final String KEY_ROOT_NO = "rootNo";
     public static final String KEY_FEES = "fees";
     public static final String KEY_BALANCE = "balance";
-    public static final String KEY_AREA = "area";
+    public static final String KEY_AREA = "areaId";
     public static final String KEY_STBID = "stbid";
     public static final String KEY_STARTDATE = "startdate";
     public static final String KEY_STOPDATE = "stopdate";
@@ -65,7 +64,7 @@ public class DbHendler extends SQLiteOpenHelper {
     public static final String KEY_NOC = "no_connections";
     public static final String KEY_PERSONEXTRA1 = "col_13";
     public static final String KEY_PERSONEXTRA2 = "col_14";
-    public static final String KEY_NICKNAME = "col_15";
+    public static final String KEY_NICKNAME = "remark";
     public static final String KEY_PERSONEXTRA4 = "col_16";
     public static final String KEY_PERSONEXTRA5 = "col_17";
     public static final String KEY_PERSONEXTRA6 = "col_18";
@@ -102,8 +101,9 @@ public class DbHendler extends SQLiteOpenHelper {
     private static final String KEY_MONTHEXTRA2 = "col_4";
 
 
-    public static final String KEY_USERID = "no";
-    public static final String KEY_USERPASSWORD = "area_name";
+    public static final String KEY_SERVERID = "serverid";
+    public static final String KEY_USERID = "userid";
+    public static final String KEY_USERPASSWORD = "userpassword";
     public static final String KEY_IDPWEXTRA1 = "col_4";
     public static final String KEY_IDPWEXTRA2 = "col_5";
 
@@ -112,7 +112,7 @@ public class DbHendler extends SQLiteOpenHelper {
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_NAME + " TEXT,"
             + KEY_PHONE_NO + " TEXT, "
-            + KEY_CUST_NO + " REAL, "
+            + KEY_ROOT_NO + " REAL, "
             + KEY_FEES + " INTEGER, "
             + KEY_BALANCE + " INTEGER, "
             + KEY_AREA + " INTEGER DEFAULT 1, "
@@ -170,7 +170,7 @@ public class DbHendler extends SQLiteOpenHelper {
             + ")";
     String CREATE_IDPW_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_IDPW + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + KEY_USERID + " TEXT, "
+            + KEY_SERVERID + " TEXT, "
             + KEY_USERPASSWORD + " TEXT, "
             + KEY_AREAEXTRA1 + " TEXT DEFAULT 'N/A', "
             + KEY_AREAEXTRA2 + " INTEGER DEFAULT 0"
@@ -243,8 +243,8 @@ public class DbHendler extends SQLiteOpenHelper {
         db.execSQL(CREATE_MONTHEND_TABLE);
 
 
-        db.execSQL("INSERT INTO " + TABLE_PERSON_INFO + "(" + KEY_ID + ", " + KEY_NAME + ", " + KEY_PHONE_NO + ", " + KEY_CUST_NO + ", " + KEY_FEES + ", " + KEY_BALANCE + ", " + KEY_AREA + ", " + KEY_STBID + ", " + KEY_PERSONEXTRA1 + ", " + KEY_PERSONEXTRA2 + ", " + KEY_NICKNAME + ", " + KEY_PERSONEXTRA4 + ", " + KEY_PERSONEXTRA5 + ", " + KEY_PERSONEXTRA6 + ") " +
-                "SELECT " + KEY_ID + ", " + KEY_NAME + ", " + KEY_PHONE_NO + ", " + KEY_CUST_NO + ", " + KEY_FEES + ", " + KEY_BALANCE + ", " + KEY_AREA + ", " + KEY_STBID + ", " + KEY_PERSONEXTRA1 + ", " + KEY_PERSONEXTRA2 + ", " + KEY_NICKNAME + ", " + KEY_PERSONEXTRA4 + ", " + KEY_PERSONEXTRA5 + ", " + KEY_PERSONEXTRA6 + " FROM TempOldTablePerson");
+        db.execSQL("INSERT INTO " + TABLE_PERSON_INFO + "(" + KEY_ID + ", " + KEY_NAME + ", " + KEY_PHONE_NO + ", " + KEY_ROOT_NO + ", " + KEY_FEES + ", " + KEY_BALANCE + ", " + KEY_AREA + ", " + KEY_STBID + ", " + KEY_PERSONEXTRA1 + ", " + KEY_PERSONEXTRA2 + ", " + KEY_NICKNAME + ", " + KEY_PERSONEXTRA4 + ", " + KEY_PERSONEXTRA5 + ", " + KEY_PERSONEXTRA6 + ") " +
+                "SELECT " + KEY_ID + ", " + KEY_NAME + ", " + KEY_PHONE_NO + ", " + KEY_ROOT_NO + ", " + KEY_FEES + ", " + KEY_BALANCE + ", " + KEY_AREA + ", " + KEY_STBID + ", " + KEY_PERSONEXTRA1 + ", " + KEY_PERSONEXTRA2 + ", " + KEY_NICKNAME + ", " + KEY_PERSONEXTRA4 + ", " + KEY_PERSONEXTRA5 + ", " + KEY_PERSONEXTRA6 + " FROM TempOldTablePerson");
 
         db.execSQL("INSERT INTO " + TABLE_FEES + "(" + KEY_NO + ", " + KEY_ID + ", " + KEY_DEBIT + ", " + KEY_DATE + ", " + KEY_REMARK + ", " + KEY_FEESEXTRA1 + ", " + KEY_FEESEXTRA2 + ") " +
                 "SELECT " + KEY_NO + ", " + KEY_ID + ", " + KEY_DEBIT + ", " + KEY_DATE + ", " + KEY_REMARK + ", " + KEY_FEESEXTRA1 + ", " + KEY_FEESEXTRA2 + "  FROM TempOldTableFees");
@@ -303,8 +303,8 @@ public class DbHendler extends SQLiteOpenHelper {
     // getting to list view
     public Cursor getAllProducts() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String columns[] = {KEY_ID, KEY_NAME, KEY_PHONE_NO, KEY_CUST_NO, KEY_FEES, KEY_BALANCE, KEY_STBID};
-        Cursor cursor = db.query(TABLE_PERSON_INFO, columns, null, null, null, null, KEY_CUST_NO);
+        String columns[] = {KEY_ID, KEY_NAME, KEY_PHONE_NO, KEY_ROOT_NO, KEY_FEES, KEY_BALANCE, KEY_STBID};
+        Cursor cursor = db.query(TABLE_PERSON_INFO, columns, null, null, null, null, KEY_ROOT_NO);
         if (cursor != null) {
             cursor.moveToFirst();
             return cursor;
@@ -319,9 +319,9 @@ public class DbHendler extends SQLiteOpenHelper {
 
         String query;
         if (areaId == 1) {
-            query = "SELECT personinfo._id,name,phone_no,cust_no,constatus, fees, balance, serialNo, " + KEY_NICKNAME + " FROM PERSONINFO LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID ORDER BY cust_no ASC ";
+            query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees, balance, serialNo, " + KEY_NICKNAME + " FROM PERSONINFO LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID ORDER BY rootNo ASC ";
         } else {
-            query = "SELECT personinfo._id,name,phone_no,cust_no,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM PERSONINFO LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID WHERE personInfo.area = " + areaId + " ORDER BY cust_no ASC ";
+            query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM PERSONINFO LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID WHERE personInfo.area = " + areaId + " ORDER BY rootNo ASC ";
         }
         //    Log.d(TAG, "GET ALL:" + query);
         Cursor cursor = db.rawQuery(query, null);
@@ -386,7 +386,7 @@ public class DbHendler extends SQLiteOpenHelper {
     //region serarch person to list
     public Cursor searchPersonToList(String namesearch) {
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT personinfo._id,name,phone_no,cust_no,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_NAME + "  LIKE '%" + namesearch + "%';";
+        String query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_NAME + "  LIKE '%" + namesearch + "%';";
         Cursor cursor = db.rawQuery(query, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -401,7 +401,7 @@ public class DbHendler extends SQLiteOpenHelper {
     public Cursor searchPersonByNickName(String namesearch) {
         Log.d(TAG, "searchPersonByNickName: executed");
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT personinfo._id,name,phone_no,cust_no,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_NICKNAME + "  LIKE '%" + namesearch + "%';";
+        String query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_NICKNAME + "  LIKE '%" + namesearch + "%';";
         Cursor cursor = db.rawQuery(query, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -413,7 +413,7 @@ public class DbHendler extends SQLiteOpenHelper {
 
     public Cursor searchBySTBSN(String namesearch) {
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT personinfo._id,name,phone_no,cust_no,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_SN + "  LIKE '%" + namesearch + "%';";
+        String query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_SN + "  LIKE '%" + namesearch + "%';";
         Cursor cursor = db.rawQuery(query, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -429,7 +429,7 @@ public class DbHendler extends SQLiteOpenHelper {
     public Cursor searchPersonByMobileNo(String namesearch) {
         Log.d(TAG, "searchPersonByNickName: executed");
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT personinfo._id,name,phone_no,cust_no,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_PHONE_NO + "  LIKE '%" + namesearch + "%';";
+        String query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_PHONE_NO + "  LIKE '%" + namesearch + "%';";
         Cursor cursor = db.rawQuery(query, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -458,7 +458,7 @@ public class DbHendler extends SQLiteOpenHelper {
     public Cursor getLargerBalance() {
         SQLiteDatabase db = getWritableDatabase();
 
-        String query = "SELECT personinfo._id,name,phone_no,cust_no,constatus,fees,balance, " + KEY_NICKNAME + ", serialNo " +
+        String query = "SELECT personinfo._id,name,phone_no,rootNo,constatus,fees,balance, " + KEY_NICKNAME + ", serialNo " +
                 "FROM " + TABLE_PERSON_INFO +
                 " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID " +
                 "ORDER BY " + KEY_BALANCE + " DESC ;";
@@ -479,7 +479,7 @@ public class DbHendler extends SQLiteOpenHelper {
                 " FROM " + TABLE_FEES +
                 " LEFT JOIN " + TABLE_PERSON_INFO + " ON " + TABLE_PERSON_INFO + "._id =" + TABLE_FEES + "._id" +
                 " WHERE " + KEY_DATE + " BETWEEN '" + from + "' AND '" + to + "'";
-        Log.d(TAG, "listforBtwtwoDates: " + selectQuery);                                                                                                                           //   LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID ORDER BY cust_no ASC ";
+        Log.d(TAG, "listforBtwtwoDates: " + selectQuery);                                                                                                                           //   LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID ORDER BY rootNo ASC ";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -558,11 +558,13 @@ public class DbHendler extends SQLiteOpenHelper {
     public Cursor getIDPW() {
 
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = {KEY_ID, KEY_USERID, KEY_USERPASSWORD};
+        String[] columns = {KEY_ID, KEY_SERVERID, KEY_USERID, KEY_USERPASSWORD};
         Cursor cursor = db.query(TABLE_IDPW, columns, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 ArrayList<String> list = new ArrayList<String>();
+
+                list.add(cursor.getString(cursor.getColumnIndex(KEY_SERVERID)));
                 list.add(cursor.getString(cursor.getColumnIndex(KEY_USERID)));
                 list.add(cursor.getString(cursor.getColumnIndex(KEY_USERPASSWORD)));
                 Log.d(TAG, "getIDPW: " + list);
@@ -574,11 +576,12 @@ public class DbHendler extends SQLiteOpenHelper {
     public Cursor getIDPWforEdit(int id) {
 
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = {KEY_ID, KEY_USERID, KEY_USERPASSWORD};
+        String[] columns = {KEY_ID, KEY_SERVERID, KEY_USERID, KEY_USERPASSWORD};
         Cursor cursor = db.query(TABLE_IDPW, columns, KEY_ID + " = '" + id + "'", null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 ArrayList<String> list = new ArrayList<String>();
+                list.add(cursor.getString(cursor.getColumnIndex(KEY_SERVERID)));
                 list.add(cursor.getString(cursor.getColumnIndex(KEY_USERID)));
                 list.add(cursor.getString(cursor.getColumnIndex(KEY_USERPASSWORD)));
                 Log.d(TAG, "getIDPWforEdit: " + list);
@@ -589,9 +592,10 @@ public class DbHendler extends SQLiteOpenHelper {
     }
 
 
-    public void setIDPW(String id, String pw) {
+    public void setIDPW(String code, String id, String pw) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(KEY_SERVERID, code);
         values.put(KEY_USERID, id);
         values.put(KEY_USERPASSWORD, pw);
         db.insert(TABLE_IDPW, null, values);
@@ -601,7 +605,7 @@ public class DbHendler extends SQLiteOpenHelper {
     public void updateIDPW(int id, String userid, String userpw) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_USERID, userid);
+        values.put(KEY_SERVERID, userid);
         values.put(KEY_USERPASSWORD, userpw);
         db.update(TABLE_IDPW, values, KEY_ID + " =?", new String[]{String.valueOf(id)});
         db.close();
@@ -614,7 +618,7 @@ public class DbHendler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, personInfo.getName());
         values.put(KEY_PHONE_NO, personInfo.getPhoneNumber());
-        values.put(KEY_CUST_NO, personInfo.get_cust_no());
+        values.put(KEY_ROOT_NO, personInfo.get_rootNo());
         values.put(KEY_FEES, personInfo.get_fees());
         values.put(KEY_BALANCE, personInfo.get_balance());
         values.put(KEY_AREA, personInfo.get_area());
@@ -632,7 +636,7 @@ public class DbHendler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, personInfo.getName());
         values.put(KEY_PHONE_NO, personInfo.getPhoneNumber());
-        values.put(KEY_CUST_NO, personInfo.get_cust_no());
+        values.put(KEY_ROOT_NO, personInfo.get_rootNo());
         values.put(KEY_FEES, personInfo.get_fees());
         values.put(KEY_BALANCE, personInfo.get_balance());
         values.put(KEY_STBID, personInfo.getStbID());
@@ -698,7 +702,7 @@ public class DbHendler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, personInfo.getName());
         values.put(KEY_PHONE_NO, personInfo.getPhoneNumber());
-        values.put(KEY_CUST_NO, personInfo.get_cust_no());
+        values.put(KEY_ROOT_NO, personInfo.get_rootNo());
         values.put(KEY_FEES, personInfo.get_fees());
         values.put(KEY_BALANCE, personInfo.get_balance());
         values.put(KEY_AREA, personInfo.get_area());
@@ -850,7 +854,7 @@ public class DbHendler extends SQLiteOpenHelper {
 
     public void insertBulkData() {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("INSERT INTO " + TABLE_PERSON_INFO + "( " + KEY_NAME + ", " + KEY_PHONE_NO + ", " + KEY_CUST_NO + ", " + KEY_FEES + ", " + KEY_BALANCE + ", " + KEY_STARTDATE + ", " + KEY_AREA + ", " + KEY_NICKNAME + " ) VALUES " +
+        db.execSQL("INSERT INTO " + TABLE_PERSON_INFO + "( " + KEY_NAME + ", " + KEY_PHONE_NO + ", " + KEY_ROOT_NO + ", " + KEY_FEES + ", " + KEY_BALANCE + ", " + KEY_STARTDATE + ", " + KEY_AREA + ", " + KEY_NICKNAME + " ) VALUES " +
                 "('Ram', '55446', 2, 280, 560, '2017-5-3', 1, 'nickname ')," +
                 "('Sham', '89681', 3, 280, 560,'2017-5-4', 1, 'nickname')," +
                 "('Makhan', '888', 4, 280, 280,'2017-5-7', 1, 'nickname'), " +
@@ -899,14 +903,15 @@ public class DbHendler extends SQLiteOpenHelper {
 
     public PersonInfo getCustInfo(int id) {
         SQLiteDatabase db = getReadableDatabase();
-        String columns[] = {KEY_ID, KEY_NAME, KEY_PHONE_NO, KEY_CUST_NO, KEY_FEES, KEY_BALANCE, KEY_AREA, KEY_NICKNAME, KEY_STARTDATE};
+        String columns[] = {KEY_ID, KEY_NAME, KEY_PHONE_NO, KEY_ROOT_NO, KEY_FEES, KEY_BALANCE, KEY_AREA, KEY_NICKNAME, KEY_STARTDATE};
         Cursor cursor = db.query(TABLE_PERSON_INFO, columns, KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
-            cursor.moveToFirst();
+            Log.d(TAG, "getCustInfo: " + cursor.getCount());
+        cursor.moveToFirst();
         PersonInfo info = new PersonInfo(Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_ID))),
                 cursor.getString(cursor.getColumnIndex(KEY_NAME)),
                 cursor.getString(cursor.getColumnIndex(KEY_PHONE_NO)),
-                cursor.getFloat(cursor.getColumnIndex(KEY_CUST_NO)),
+                cursor.getFloat(cursor.getColumnIndex(KEY_ROOT_NO)),
                 cursor.getInt(cursor.getColumnIndex(KEY_FEES)),
                 cursor.getInt(cursor.getColumnIndex(KEY_BALANCE)),
                 cursor.getInt(cursor.getColumnIndex(KEY_AREA)),
@@ -966,11 +971,11 @@ public class DbHendler extends SQLiteOpenHelper {
         return stb;
     }
 
-    public int getSTBID(int id) {
+    public int getSTBID(int custId) {
         int stbID = 0;
         SQLiteDatabase db = getReadableDatabase();
         String columns[] = {KEY_ID, KEY_STBID};
-        Cursor cursor = db.query(TABLE_PERSON_INFO, columns, KEY_ID + " =? ", new String[]{String.valueOf(id)}, null, null, null, null);
+        Cursor cursor = db.query(TABLE_PERSON_INFO, columns, KEY_ID + " =? ", new String[]{String.valueOf(custId)}, null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
             stbID = cursor.getInt(cursor.getColumnIndex(KEY_STBID));
@@ -1164,7 +1169,7 @@ public class DbHendler extends SQLiteOpenHelper {
     public List<PersonInfo> getAllContacts() {
         List<PersonInfo> contactList = new ArrayList<>();
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_PERSON_INFO + " ORDER BY " + KEY_CUST_NO + " ASC";
+        String selectQuery = "SELECT  * FROM " + TABLE_PERSON_INFO + " ORDER BY " + KEY_ROOT_NO + " ASC";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         // looping through all rows and adding to list
@@ -1292,6 +1297,7 @@ public class DbHendler extends SQLiteOpenHelper {
     }
 
     public ArrayList<String> getSTBsForCustomer(int custId) {
+        Log.d(TAG, "getSTBsForCustomer: cust id " + custId);
         //    Log.d(TAG, "getSTBsForCustomer: ");
         ArrayList stbList = new ArrayList<String>();
         String selectQuery = "SELECT * FROM stbRecord WHERE customerId = " + custId;
@@ -1317,7 +1323,6 @@ public class DbHendler extends SQLiteOpenHelper {
     }
 
 
-
     public String getVcMacNoWithSerialNo(String headerTitle) {
         String selectQuery = "SELECT * FROM " + TABLE_STB + " WHERE " + KEY_SN + " = '" + headerTitle + "'";
         SQLiteDatabase db = DbHendler.this.getWritableDatabase();
@@ -1331,13 +1336,14 @@ public class DbHendler extends SQLiteOpenHelper {
                 cursor.moveToFirst();
                 do {
                     vcMac = cursor.getString(cursor.getColumnIndex("vcNo"));
-                    Log.d(TAG, "getPackListOnSTB: " + vcMac);
+                    //     Log.d(TAG, "getPackListOnSTB: " + vcMac);
                 } while (cursor.moveToNext());
 
             }
         }
         return vcMac;
     }
+
     public ArrayList<String> getPackListOnSTB(String stbsn) {
         ArrayList<String> packList = new ArrayList<String>();
 
@@ -1349,9 +1355,9 @@ public class DbHendler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = DbHendler.this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        double total=0.0;
+        float total = 0;
         if (cursor != null) {
-            Log.d(TAG, "getPackListOnSTB: cursor length" + cursor.getCount());
+            Log.d(TAG, "getPackListOnSTB: cursor length " + cursor.getCount());
             String pkgname;
             if (cursor.getCount() < 1) {
                 packList.add("No pack added");
@@ -1359,22 +1365,24 @@ public class DbHendler extends SQLiteOpenHelper {
                 cursor.moveToFirst();
                 do {
                     pkgname = cursor.getString(cursor.getColumnIndex("pkgname"));
-                    total += Double.parseDouble(cursor.getString(cursor.getColumnIndex("pkgprice")));
+                    total += Float.parseFloat(cursor.getString(cursor.getColumnIndex("pkgprice")));
                     packList.add(pkgname);
-                    Log.d(TAG, "getPackListOnSTB: " + pkgname);
+                    //     Log.d(TAG, "getPackListOnSTB: " + pkgname);
                 } while (cursor.moveToNext());
-                packList.add("Total Price Rs: "+total);
+
+                 packList.add(new DecimalFormat("#.00").format(total));
             }
         }
 
         return packList;
     }
-    public String getPackPrice(String childListPack) {
-        String query = "select * from pkgList where pkgname  = '" + childListPack + "' ";
+
+    public String getPackPrice(String packOnStb) {
+        String query = "select * from pkgList where pkgname  = '" + packOnStb + "' ";
         SQLiteDatabase db = DbHendler.this.getWritableDatabase();
         String price = null;
         Cursor cursor = db.rawQuery(query, null);
-        //Log.d(TAG, "getVcMacNoWithSerialNo: "+cursor.getCount());
+        //    Log.d(TAG, "getVcMacNoWithSerialNo: " + cursor.getCount());
         if (cursor != null) {
             if (cursor.getCount() < 1) {
                 price = "";
@@ -1382,84 +1390,119 @@ public class DbHendler extends SQLiteOpenHelper {
                 cursor.moveToFirst();
                 do {
                     price = cursor.getString(cursor.getColumnIndex("pkgprice"));
-                    Log.d(TAG, "getPackListOnSTB: " + price);
+                    //    Log.d(TAG, "getPackListOnSTB: " + price);
                 } while (cursor.moveToNext());
             }
-        }return price;
+        }
+        return price;
     }
 
-    public class BGTask extends AsyncTask<Void, Integer, Void> {
+    public void deletePackOnSTB(String stb, String packToDelete) {
+        Log.d(TAG, "deletePackOnSTB: " + stb + " " + packToDelete);
+        String query = "DELETE from pkgOnStb WHERE stbid in (SELECT _id FROM stbRecord WHERE serialNo = '" + stb + "') AND pkgid in (SELECT pkgid FROM pkgList WHERE pkgname = '" + packToDelete + "')";
+        SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+        db.execSQL(query);
+        db.close();
 
-        ProgressDialog progressDialog;
-        int rowcount;
+    }
 
-        @Override
-        protected void onPreExecute() {
+    public String getFeesForSTB(String stbsn) {
+        float fees = 0.0f;
 
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setTitle("Wait..");
-            //progressDialog.setMessage("Wait...Reading Data");
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.setIndeterminate(false);
-            progressDialog.show();
-            ;
-        }
+        String query = "select stbRecord.serialNo, pkgOnStb.stbid, pkgList.pkgname, pkgList.pkgprice \n" +
+                "from stbRecord\n" +
+                "join pkgOnStb on pkgOnStb.stbid = stbRecord._id\n" +
+                "join pkgList  on pkgOnStb.pkgId = pkgList.pkgid\n" +
+                "where stbRecord.serialNo = " + "'" + stbsn + "'";
 
-        @Override
-        protected Void doInBackground(Void... voids) {
-            // Log.d(TAG, "doInBackground: called");
-            String selectQuery = "SELECT  * FROM " + TABLE_PERSON_INFO + " WHERE " + KEY_CONSTATUS + " = 'ACTIVE'";
-            SQLiteDatabase db = DbHendler.this.getWritableDatabase();
-            Cursor cursor = db.rawQuery(selectQuery, null);
-            rowcount = cursor.getCount();
-            int progress = 1;
-            // looping through all rows and adding to list
-            if (cursor.moveToFirst()) {
+        SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null) {
+            if (cursor.getCount() < 1) {
+            } else {
+                cursor.moveToFirst();
                 do {
-                    int id_column = cursor.getColumnIndex(KEY_ID);
-                    int id = cursor.getInt(id_column);
-                    int feesColumn = cursor.getColumnIndex(KEY_FEES);
-                    int i = cursor.getInt(feesColumn);
-                    int balanceColumn = cursor.getColumnIndex(KEY_BALANCE);
-                    int j = cursor.getInt(balanceColumn);
-                    int k = i + j;
-                    // Adding contact to list
-                    Log.d(TAG, "ID:" + id + " " + i + " " + j + "=" + k);
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put(KEY_BALANCE, k);
-                    db.update(TABLE_PERSON_INFO, contentValues, KEY_ID + "=?", new String[]{String.valueOf(id)});
-                    progress++;
-                    if (progress > (rowcount - 10)) {
-                        try {
-                            Thread.sleep(600);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    publishProgress(progress);
+                    fees += Float.parseFloat(cursor.getString(cursor.getColumnIndex("pkgprice")));
                 } while (cursor.moveToNext());
-                entryTomonthTable();
+                //  packList.add(new DecimalFormat("#.00").format(total));
             }
-            cursor.close();
-            return null;
-        }
 
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            Log.d(TAG, "onProgressUpdate: called");
-            //  super.onProgressUpdate(progress);
-            progressDialog.setMessage("Updating Balance for customer " + values[0] + " of " + rowcount);
         }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-
-            progressDialog.dismiss();
-            Toast.makeText(context, " Records Inserted", Toast.LENGTH_SHORT).show();
-            //try to update the list adaptor
-        }
+        return (new DecimalFormat("#.00").format(fees));
     }
+        public class BGTask extends AsyncTask<Void, Integer, Void> {
+
+            ProgressDialog progressDialog;
+            int rowcount;
+
+            @Override
+            protected void onPreExecute() {
+
+                progressDialog = new ProgressDialog(context);
+                progressDialog.setTitle("Wait..");
+                //progressDialog.setMessage("Wait...Reading Data");
+                progressDialog.setCanceledOnTouchOutside(false);
+                progressDialog.setIndeterminate(false);
+                progressDialog.show();
+                ;
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                // Log.d(TAG, "doInBackground: called");
+                String selectQuery = "SELECT  * FROM " + TABLE_PERSON_INFO + " WHERE " + KEY_CONSTATUS + " = 'ACTIVE'";
+                SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+                Cursor cursor = db.rawQuery(selectQuery, null);
+                rowcount = cursor.getCount();
+                int progress = 1;
+                // looping through all rows and adding to list
+                if (cursor.moveToFirst()) {
+                    do {
+                        int id_column = cursor.getColumnIndex(KEY_ID);
+                        int id = cursor.getInt(id_column);
+                        int feesColumn = cursor.getColumnIndex(KEY_FEES);
+                        int i = cursor.getInt(feesColumn);
+                        int balanceColumn = cursor.getColumnIndex(KEY_BALANCE);
+                        int j = cursor.getInt(balanceColumn);
+                        int k = i + j;
+                        // Adding contact to list
+                        Log.d(TAG, "ID:" + id + " " + i + " " + j + "=" + k);
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(KEY_BALANCE, k);
+                        db.update(TABLE_PERSON_INFO, contentValues, KEY_ID + "=?", new String[]{String.valueOf(id)});
+                        progress++;
+                        if (progress > (rowcount - 10)) {
+                            try {
+                                Thread.sleep(600);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        publishProgress(progress);
+                    } while (cursor.moveToNext());
+                    entryTomonthTable();
+                }
+                cursor.close();
+                return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                Log.d(TAG, "onProgressUpdate: called");
+                //  super.onProgressUpdate(progress);
+                progressDialog.setMessage("Updating Balance for customer " + values[0] + " of " + rowcount);
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+
+                progressDialog.dismiss();
+                Toast.makeText(context, " Records Inserted", Toast.LENGTH_SHORT).show();
+                //try to update the list adaptor
+            }
+        }
 
 
-}
+    }
 

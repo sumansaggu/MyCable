@@ -10,13 +10,14 @@
         android:id="@+id/lblListPack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:text="Pack Name"
-        android:textSize="17dip"
+        android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.012"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,15 +25,27 @@
         android:id="@+id/lblListPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:text="Pack Price"
-        android:textSize="17dip"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toStartOf="@+id/deletePkg"
         app:layout_constraintTop_toTopOf="parent">
 
     </TextView>
+
+    <ImageButton
+        android:id="@+id/deletePkg"
+        android:layout_width="37dp"
+        android:layout_height="31dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/btn_dialog" />
 
 </android.support.constraint.ConstraintLayout>

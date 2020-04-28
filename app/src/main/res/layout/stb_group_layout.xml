@@ -17,7 +17,7 @@
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:text="fcbffffffff"
         android:textColor="#161515"
-        android:textSize="17dp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,9 +30,22 @@
         android:layout_marginRight="8dp"
         android:text="0880TextView"
         android:textColor="#161515"
-        android:textSize="17dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/copyFromGroupBtn"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/copyFromGroupBtn"
+        android:layout_width="48dp"
+        android:layout_height="37dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:text="Copy"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 
 </android.support.constraint.ConstraintLayout>

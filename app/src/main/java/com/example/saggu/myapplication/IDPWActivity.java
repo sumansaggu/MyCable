@@ -1,7 +1,6 @@
 package com.example.saggu.myapplication;
 
 import android.app.FragmentManager;
-import android.content.Intent;
 import android.database.Cursor;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -62,7 +61,7 @@ public class IDPWActivity extends AppCompatActivity {
             }
             String[] columns = new String[]{
                     //  DbHendler.KEY_ID,
-                    DbHendler.KEY_USERID,
+                    DbHendler.KEY_USERID
                     //      DbHendler.KEY_USERPASSWORD
 
             };

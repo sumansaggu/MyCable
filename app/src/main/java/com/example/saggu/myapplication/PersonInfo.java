@@ -8,7 +8,7 @@ public class PersonInfo {
     private int _id;
     private String _name;
     private String _phone_no;
-    private float _cust_no;
+    private float _rootNo;
     private int _fees;
     private int _balance;
     private int _area;
@@ -29,10 +29,10 @@ public class PersonInfo {
 
 
     //Constructors
-    public PersonInfo(String name, String phone_no, float cust_no, int fees, int balance, int area, String date, String nName) {
+    public PersonInfo(String name, String phone_no, float rootNo, int fees, int balance, int area, String date, String nName) {
         this._name = name;
         this._phone_no = phone_no;
-        this._cust_no = cust_no;
+        this._rootNo = rootNo;
         this._fees = fees;
         this._balance= balance;
         this._area=area;
@@ -40,11 +40,11 @@ public class PersonInfo {
         this._nName= nName;
     }
 
-    public PersonInfo(int id,  String name, String phone_no, float cust_no, int fees, int balance,int area, String date,String nName) {
+    public PersonInfo(int id,  String name, String phone_no, float rootNo, int fees, int balance,int area, String date,String nName) {
         this._id = id;
         this._name = name;
         this._phone_no = phone_no;
-        this._cust_no = cust_no;
+        this._rootNo = rootNo;
         this._fees = fees;
         this._balance= balance;
         this._nName= nName;
@@ -66,10 +66,10 @@ public class PersonInfo {
         this._id=Id;
     }
 
-    public PersonInfo(String name, String phone_no, float cust_no, int fees, int balance,int stbid, String nName) {
+    public PersonInfo(String name, String phone_no, float rootNo, int fees, int balance,int stbid, String nName) {
         this._name = name;
         this._phone_no = phone_no;
-        this._cust_no = cust_no;
+        this._rootNo = rootNo;
         this._fees = fees;
         this._balance= balance;
         this._stbid= stbid;
@@ -95,7 +95,7 @@ public class PersonInfo {
 
 
 
-    public float get_cust_no(){return this._cust_no;}
+    public float get_rootNo(){return this._rootNo;}
 
 
     public int get_fees(){return this._fees;}
@@ -124,7 +124,7 @@ public class PersonInfo {
         this._nName = _nName;
     }
     //settin customer no
-    public void setCustNo(float cust_no){this._cust_no=cust_no;}
+    public void setCustNo(float rootNo){this._rootNo=rootNo;}
     //seeting fees
     public void setFees(int fees){this._fees = fees;}
   //setting balance

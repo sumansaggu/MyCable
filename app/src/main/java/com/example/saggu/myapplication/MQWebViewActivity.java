@@ -53,7 +53,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
     Spinner spinnerID;
     public static Activity mqactivity;
     DbHendler dbHendler;
-    List<String> listID;
+    List<String> listServerId, listUserId;
     List<String> listPW;
     EditText searchInpage;
 
@@ -74,7 +74,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         spinnerID = (Spinner) findViewById(R.id.spnrOracleID);
         spinnerID.setOnItemSelectedListener(this);
-        searchInpage =(EditText) findViewById(R.id.searchInWebPage);
+        searchInpage = (EditText) findViewById(R.id.searchInWebPage);
         searchInpage.addTextChangedListener(new myTextWatcher());
 
 
@@ -114,18 +114,19 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
 
 
     }
-    public void find(String s){
+
+    public void find(String s) {
 
         mywebView.findAllAsync(s);
         mywebView.setFindListener(new WebView.FindListener() {
             @Override
             public void onFindResultReceived(int activeMatchOrdinal, int numberOfMatches, boolean isDoneCounting) {
                 // Toast.makeText(MQWebViewActivity.this, numberOfMatches+" Matches found", Toast.LENGTH_SHORT).show();
-                TextView findcounttext =(TextView) findViewById(R.id.findCountTxt);
-                if(!isDoneCounting){
+                TextView findcounttext = (TextView) findViewById(R.id.findCountTxt);
+                if (!isDoneCounting) {
                     return;
                 }
-                if(numberOfMatches>0){
+                if (numberOfMatches > 0) {
                     findcounttext.setText(Integer.toString(activeMatchOrdinal + 1) + "/" + Integer.toString(numberOfMatches));
 
                 }
@@ -133,10 +134,12 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
         });
 
     }
-    public void findInPagenext(View view){
+
+    public void findInPagenext(View view) {
         mywebView.findNext(true);
     }
-    public void findInPageprevious(View view){
+
+    public void findInPageprevious(View view) {
         mywebView.findNext(false);
     }
 
@@ -161,19 +164,21 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
     }
 
     public void loadSpinner() {
-        listID = new ArrayList<>();
+        listServerId = new ArrayList<>();
+        listUserId = new ArrayList<>();
         listPW = new ArrayList<>();
-        listID.add("Select ID to login");
+        listUserId.add("Select ID to login");
         listPW.add("Blank");
 
         Cursor cursor = dbHendler.getIDPW();
         if (cursor.moveToFirst()) {
             do {
-                listID.add(cursor.getString(cursor.getColumnIndex(dbHendler.KEY_USERID)));
+                // listServerId.add(cursor.getString(cursor.getColumnIndex(dbHendler.KEY_SERVERID)));
+                listUserId.add(cursor.getString(cursor.getColumnIndex(dbHendler.KEY_USERID)));
                 listPW.add(cursor.getString(cursor.getColumnIndex(dbHendler.KEY_USERPASSWORD)));
             } while (cursor.moveToNext());
         }
-        ArrayAdapter<String> idadaptor = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, listID);
+        ArrayAdapter<String> idadaptor = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, listUserId);
         idadaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerID.setAdapter(idadaptor);
 
@@ -311,6 +316,11 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
                 startActivity(intent);
 
             }
+            if (cActivity.equals("StbForCustomer")) {
+                Intent intent = new Intent(this, StbForCustomer.class);
+                startActivity(intent);
+
+            }
             return true;
         }
 
@@ -358,7 +368,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
             progressBar.setVisibility(View.VISIBLE);
             Log.d(TAG, "onPageStarted: ");
             String currenturl = mywebView.getUrl();
-            Toast.makeText(MQWebViewActivity.this, "Loading "+currenturl, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MQWebViewActivity.this, "Loading " + currenturl, Toast.LENGTH_SHORT).show();
         }
 
 
