@@ -2,11 +2,9 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1"
-    android:id="@+id/dailog_fees">
-
+    tools:context=".RecieptActivity">
 
     <TextView
         android:id="@+id/title_dialog"
@@ -25,6 +23,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/date_receipt"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="48dp"
         android:text="Date:"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,8 +36,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
 
-        android:layout_marginStart="13dp"
-        android:layout_marginLeft="13dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="48dp"
         android:ems="10"
         android:inputType="date"
@@ -51,8 +51,8 @@
         android:layout_height="wrap_content"
 
         android:layout_marginTop="48dp"
-        android:layout_marginEnd="52dp"
-        android:layout_marginRight="52dp"
+        android:layout_marginEnd="68dp"
+        android:layout_marginRight="68dp"
         android:text="Fees:"
         app:layout_constraintEnd_toEndOf="@+id/fees_dialog"
         app:layout_constraintTop_toBottomOf="@+id/title_dialog" />
@@ -63,6 +63,8 @@
         android:layout_height="wrap_content"
 
         android:layout_marginTop="48dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginRight="44dp"
         android:text="8888"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_dialog" />
@@ -71,6 +73,8 @@
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="36dp"
+        android:layout_marginRight="36dp"
         android:text="Balance:"
         app:layout_constraintEnd_toStartOf="@+id/balance_dialog"
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
@@ -81,6 +85,8 @@
         android:layout_height="wrap_content"
 
 
+        android:layout_marginEnd="44dp"
+        android:layout_marginRight="44dp"
         android:text="8888"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fees_dialog" />
@@ -90,15 +96,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/reciept_dialog"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="16dp"
         android:text="Amount:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/date_diaglog" />
 
     <EditText
         android:id="@+id/reciept_dialog"
-        android:layout_width="137dp"
-        android:layout_height="37dp"
+        android:layout_width="133dp"
+        android:layout_height="34dp"
 
 
         android:layout_marginStart="12dp"
@@ -199,7 +207,7 @@
 
         <RadioButton
             android:id="@+id/radioBtnDebit"
-            android:layout_width="wrap_content"
+            android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Debit" />
@@ -226,11 +234,10 @@
 
         <RadioButton
             android:id="@+id/radioBtnDiscount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="99dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Discount" />
     </RadioGroup>
-
 
 </android.support.constraint.ConstraintLayout>

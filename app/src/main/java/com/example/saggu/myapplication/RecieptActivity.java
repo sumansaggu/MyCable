@@ -2,17 +2,16 @@ package com.example.saggu.myapplication;
 
 import android.app.DialogFragment;
 import android.content.Context;
+import androidx.appcompat.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
 import android.telephony.SmsManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -21,22 +20,18 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 
-/**
- * Created by Saggu on 12/16/2016.
- */
+public class RecieptActivity extends AppCompatActivity implements View.OnClickListener, Communicator {
 
-public class DialogReciept extends DialogFragment implements View.OnClickListener {
     String TAG = "MyApp_DialogBox";
-
+    DatePicker datePicker;
     DbHendler dbHendler;
     Calendar calendar;
     TextView title_dialog;
     TextView fees_dailog;
     TextView balance_dialog;
     EditText reciept_dialog;
-    TextView date;
+    TextView dateTxtView;
     EditText remark;
     Button Ok, Cancel;
     CheckBox smsCheckbox, printCheckbox;
@@ -46,66 +41,100 @@ public class DialogReciept extends DialogFragment implements View.OnClickListene
     int id;
     String entryCrOrDr = "credit";
     String entryRcptOrDisc = "reciept";
-
-    // TODO: 14-08-2019 add debit,credit,reciept,discount option
+    Context context;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_layout, null);
-        Ok = (Button) view.findViewById(R.id.buttonYes);
-        Cancel = (Button) view.findViewById(R.id.buttonNo);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_reciept);
+        Ok = (Button) findViewById(R.id.buttonYes);
+        Cancel = (Button) findViewById(R.id.buttonNo);
         Ok.setOnClickListener(this);
         Cancel.setOnClickListener(this);
 
 
-        radioGroupRcptDisc = view.findViewById(R.id.radioGrpRcptDisc);
-        radioBtnCr = view.findViewById(R.id.radioBtnCredit);
+        radioGroupRcptDisc = findViewById(R.id.radioGrpRcptDisc);
+        radioBtnCr = findViewById(R.id.radioBtnCredit);
         radioBtnCr.setOnClickListener(this);
-        radioBtnDr = view.findViewById(R.id.radioBtnDebit);
+        radioBtnDr = findViewById(R.id.radioBtnDebit);
         radioBtnDr.setOnClickListener(this);
 
 
-        radioBtnReciept = view.findViewById(R.id.radioBtnReciept);
+        radioBtnReciept = findViewById(R.id.radioBtnReciept);
         radioBtnReciept.setOnClickListener(this);
-        radioBtnDiscount = view.findViewById(R.id.radioBtnDiscount);
+        radioBtnDiscount = findViewById(R.id.radioBtnDiscount);
         radioBtnDiscount.setOnClickListener(this);
 
 
-        fees_dailog = (TextView) view.findViewById(R.id.fees_dialog);
-        balance_dialog = (TextView) view.findViewById(R.id.balance_dialog);
-        reciept_dialog = (EditText) view.findViewById(R.id.reciept_dialog);
+        fees_dailog = (TextView) findViewById(R.id.fees_dialog);
+        balance_dialog = (TextView) findViewById(R.id.balance_dialog);
+        reciept_dialog = (EditText) findViewById(R.id.reciept_dialog);
 
 
-        title_dialog = (TextView) view.findViewById(R.id.title_dialog);
-        date = (TextView) view.findViewById(R.id.date_receipt);
-        date.setOnClickListener(this);
+        title_dialog = (TextView) findViewById(R.id.title_dialog);
+        dateTxtView = (TextView) findViewById(R.id.date_receipt);
+        dateTxtView.setOnClickListener(this);
 
-        remark = (EditText) view.findViewById(R.id.remarksEditText);
-        smsCheckbox = view.findViewById(R.id.sendSMScheckBox);
+        remark = (EditText) findViewById(R.id.remarksEditText);
+        smsCheckbox = findViewById(R.id.sendSMScheckBox);
         smsCheckbox.setOnClickListener(this);
-        printCheckbox = view.findViewById(R.id.printcheckBox);
+        printCheckbox = findViewById(R.id.printcheckBox);
         printCheckbox.setOnClickListener(this);
-        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        Bundle bundle = getArguments();
+
+     //   Bundle bundle = getArguments();
+        Bundle bundle = getIntent().getExtras();
         id = bundle.getInt("ID");
         // setCancelable(false);
         // preventing from cancel when clicking on background
-        dbHendler = new DbHendler(getActivity(), null, null, 1);
+        dbHendler = new DbHendler(this, null, null, 1);
+
         getinformation();
-        getDate();
+        getDateTxtView();
         Log.d(TAG, "onCreateView: " + entryCrOrDr);
         Log.d(TAG, "onCreateView: " + entryRcptOrDisc);
-        return view;
+    }
+    public String getDateTxtView() {
+        calendar = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = df.format(calendar.getTime());
+        dateTxtView.setText(formattedDate);
+        return formattedDate;
+
+    }
+    public void getinformation() {
+        PersonInfo personInfo = dbHendler.getCustInfo(id);
+        String name = personInfo.getName().toString().trim();
+        title_dialog.setText(name);
+        phoneno = personInfo.getPhoneNumber().toString().trim();
+
+        int fees = personInfo.get_fees();
+
+        int balance = personInfo.get_balance();
+
+        fees_dailog.setText(Integer.toString(fees));
+        balance_dialog.setText(Integer.toString(balance));
+        //getDialog().setTitle(name);
+    }
+    public void pickDate() {
+        Log.d(TAG, "pick date called");
+        DialogFragment datePicker = new MyDatePicker();
+        datePicker.show(getFragmentManager(), "datepicker");
+        Bundle bundle = new Bundle();
+        datePicker.setArguments(bundle);
+        bundle.putInt("id", 1);
+
+
     }
 
-    public void showKeyboard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getView().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+    public void changeText(String data) {
+        dateTxtView.setText(data);
     }
 
-    public void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getView().getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+    public void hideKeyboard(View v) {
+
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        //imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(v.getWindowToken(),0);
     }
 
     @Override
@@ -130,50 +159,34 @@ public class DialogReciept extends DialogFragment implements View.OnClickListene
             Log.d(TAG, "onClick: " + entryRcptOrDisc);
         }
         if (v.getId() == R.id.date_receipt) {
-            hideKeyboard();
+           hideKeyboard( v );
             pickDate();
+
+
         }
         if (v.getId() == R.id.buttonYes) {
             if (reciept_dialog.getText().toString().equals("")) {
-                Toast.makeText(this.getActivity(), "Enter the correct amount", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Enter the correct amount", Toast.LENGTH_SHORT).show();
             } else {
                 updateReciept();
                 getinformation();
                 //viewfeestable();
 
-                dismiss();
+            //    dismiss();
             }
         }
         if (v.getId() == R.id.printcheckBox) {
 
             if (printCheckbox.isChecked()) {
-                Toast.makeText(this.getActivity(), "Print option is not working yet", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Print option is not working yet", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this.getActivity(), "Print option will be added soon", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Print option will be added soon", Toast.LENGTH_SHORT).show();
             }
         }
         if (v.getId() == R.id.buttonNo) {
-            dismiss();
+          //  dismiss();
         }
     }
-
-
-    public void getinformation() {
-        PersonInfo personInfo = dbHendler.getCustInfo(id);
-        String name = personInfo.getName().toString().trim();
-        title_dialog.setText(name);
-        phoneno = personInfo.getPhoneNumber().toString().trim();
-
-        int fees = personInfo.get_fees();
-
-        int balance = personInfo.get_balance();
-
-        fees_dailog.setText(Integer.toString(fees));
-        balance_dialog.setText(Integer.toString(balance));
-        //getDialog().setTitle(name);
-    }
-
-
     public void updateReciept() {
         PersonInfo personInfo = dbHendler.getCustInfo(id);
         int lbalance = personInfo.get_balance();
@@ -181,12 +194,12 @@ public class DialogReciept extends DialogFragment implements View.OnClickListene
 
         String Amount = reciept_dialog.getText().toString().trim();
         if (Amount.equals("")) {
-            Toast.makeText(this.getActivity(), "Enter the amount", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Enter the amount", Toast.LENGTH_SHORT).show();
             return;
         } else {
             int id = this.id;
             int amount = Integer.parseInt(Amount);
-            String datefromEditText = date.getText().toString().trim();
+            String datefromEditText = dateTxtView.getText().toString().trim();
             Log.d(TAG, "" + (lbalance - amount));
             int curBalance=0;
             if(entryCrOrDr.equals("debit")){
@@ -206,9 +219,9 @@ public class DialogReciept extends DialogFragment implements View.OnClickListene
                 String smsBody = "Dear Customer.\nYour Last CableTV Balance was " + lbalance + ".\nRecived: " + amount + ". Current Balance is " + curBalance + "\nThank you";
                 SmsManager.getDefault().sendTextMessage(phoneno, null, smsBody, null, null);
             }
-            ViewAll activity = (ViewAll) getActivity();
-            activity.refreshListView();
-            Toast.makeText(this.getActivity(), "Added Rs. " + amount + " to " + name, Toast.LENGTH_SHORT).show();
+    //        ViewAll activity = (ViewAll) getActivity();
+    //        activity.refreshListView();
+            Toast.makeText(this, "Added Rs. " + amount + " to " + name, Toast.LENGTH_SHORT).show();
             reciept_dialog.setText("");
             Ok.setEnabled(false);
             Cancel.setText("Back");
@@ -217,39 +230,13 @@ public class DialogReciept extends DialogFragment implements View.OnClickListene
 
     }
 
-
-    public void viewfeestable() {
-        List<Fees> fees = dbHendler.viewFees();
-        for (Fees fees1 : fees) {
-            String log = "No: " + fees1.getNo() + " Id: " + fees1.getId()
-                    + " Fees: " + fees1.getFees() + " Date: " + fees1.getDate();
-            Log.d(TAG, log);
-        }
+    @Override
+    public void respond(String date) {
+        dateTxtView.setText(date);
     }
 
-    public String getDate() {
-        calendar = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDate = df.format(calendar.getTime());
-        date.setText(formattedDate);
-        return formattedDate;
+    @Override
+    public void respond2(String date2) {
 
     }
-
-    public void pickDate() {
-        Log.d(TAG, "pick date called");
-        DialogFragment newFragment = new MyDatePicker();
-        newFragment.show(getFragmentManager(), "datepicker");
-        Bundle bundle = new Bundle();
-        bundle.putInt("id", 1);
-        newFragment.setArguments(bundle);
-
-
-    }
-
-    public void changeText(String data) {
-        date.setText(data);
-    }
-
-
 }

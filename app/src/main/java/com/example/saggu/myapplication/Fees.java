@@ -13,9 +13,6 @@ public class Fees {
     private int _debit;
     private int _lBalance;
     private int _curBalance;
-
-
-
     private String _remark;
 
     //empty cunstuctor

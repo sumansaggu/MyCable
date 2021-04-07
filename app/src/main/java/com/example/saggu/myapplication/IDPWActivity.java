@@ -2,9 +2,11 @@ package com.example.saggu.myapplication;
 
 import android.app.FragmentManager;
 import android.database.Cursor;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
+//import android.support.design.widget.FloatingActionButton;
+//import android.support.v4.widget.SimpleCursorAdapter;
+//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -13,6 +15,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class IDPWActivity extends AppCompatActivity {
     ListView listidpw;

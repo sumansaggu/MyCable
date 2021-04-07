@@ -4,15 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StbForCustomer">
+    tools:context=".Channel_Selection_List">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
+        android:layout_marginBottom="8dp"
         android:theme="@style/AppTheme.AppBarOverlay"
-        app:layout_constraintTop_toTopOf="parent">
+
+        app:layout_constraintTop_toTopOf="parent">>
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbarchannellist"
@@ -23,13 +25,11 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include
-        android:id="@+id/ExpListVSTB_Pkg"
-        layout="@layout/content_stb_for_customer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-        tools:layout_editor_absoluteX="1dp" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerChannelList"
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

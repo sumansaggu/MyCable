@@ -10,7 +10,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -39,6 +40,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ImportActivity extends AppCompatActivity implements View.OnClickListener {
     String TAG = "ImportActivity";

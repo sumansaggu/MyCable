@@ -7,9 +7,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+//import android.support.v7.app.AlertDialog;
+//import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -45,7 +49,11 @@ public class StbForCustomer extends AppCompatActivity {
         setContentView(R.layout.activity_stb_for_customer);
         dbHendler = new DbHendler(this, null, null, 1);
         Bundle bundle = getIntent().getExtras();
-        custId = bundle.getInt("ID");
+        if (bundle !=null){
+            custId = bundle.getInt("ID");
+        }
+
+
         prepareListData();
         // get the listview
         expListView = (ExpandableListView) findViewById(R.id.expandable_list_stb);
@@ -55,20 +63,13 @@ public class StbForCustomer extends AppCompatActivity {
         listAdapter = new expandListAdapter(this, listDataHeader, listDataChild);
         // setting list adapter
         expListView.setAdapter(listAdapter);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbarchannellist);
         toolbar.setTitle("STBs");
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_audiotrack_dark));
         setSupportActionBar(toolbar);
 
 
-       /* FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
+
     }
 
     @Override
@@ -78,6 +79,7 @@ public class StbForCustomer extends AppCompatActivity {
 
         menu.setHeaderTitle("Options");
         menu.add("MSO Server");
+        menu.add("Add Channel");
 
     }
 
@@ -92,18 +94,28 @@ public class StbForCustomer extends AppCompatActivity {
             Intent intent = new Intent(this, MQWebViewActivity.class);
             intent.putExtra("CALLINGACTIVITY", "StbForCustomer");
             intent.putExtra("SN", groupItem);
+            intent.putExtra("ID",custId);
             startActivity(intent);
+        }
+        if(item.getTitle().equals("Add Channel")){
+
+            Intent intent = new Intent(this,Channel_Selection_List.class);
+            intent.putExtra("sn",groupItem);
+
+            startActivity(intent);
+
+
         }
 
 
         return super.onContextItemSelected(item);
     }
 
-    @Override
+  /*  @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
-    }
+    }*/
 
     /*
      * Preparing the list data
@@ -112,12 +124,12 @@ public class StbForCustomer extends AppCompatActivity {
 
         // Adding header data
         listDataHeader = new ArrayList<String>();
-        //   Log.d(TAG, "customer id " + custId);
+      //    Log.d(TAG, "customer id " + custId);
         listDataHeader = dbHendler.getSTBsForCustomer(custId);
         listDataChild = new HashMap<String, List<String>>();
-        //    Log.d(TAG, "prepareListData: listdataHeader " + listDataHeader);
-        //   Log.d(TAG, "prepareListData: length" + listDataHeader.size());
-        //   Log.d(TAG, "prepareListData: " + listDataHeader.get(0));
+   //        Log.d(TAG, "prepareListData: listdataHeader " + listDataHeader);
+   //       Log.d(TAG, "prepareListData: length" + listDataHeader.size());
+   //        Log.d(TAG, "prepareListData: " + listDataHeader.get(0));
         int i;
         for (i = 0; i < listDataHeader.size(); i++) {
             List<String> pkgChild = new ArrayList<String>();
@@ -132,12 +144,12 @@ public class StbForCustomer extends AppCompatActivity {
 
     }
 
-    @Override
+  /*  @Override
     public void onBackPressed() {
         super.onBackPressed();
         startActivity(new Intent(this, ViewAll.class));
         finish();
-    }
+    }*/
 
 
     private class expandListAdapter extends BaseExpandableListAdapter {
@@ -281,7 +293,7 @@ public class StbForCustomer extends AppCompatActivity {
             //endregion
 
             if (isLastChild) { // exclude last row from adding x
-                deletebtn.setVisibility(View.INVISIBLE);
+             //   deletebtn.setVisibility(View.INVISIBLE);
                 String fees = dbHendler.getFeesForSTB(_listDataHeader.get(groupPosition));
                 TextView textView= convertView.findViewById(R.id.lblListPack);
 

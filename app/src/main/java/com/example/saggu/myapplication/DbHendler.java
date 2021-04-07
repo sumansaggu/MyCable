@@ -313,17 +313,23 @@ public class DbHendler extends SQLiteOpenHelper {
         }
     }
 
-    public Cursor getAllFromCustAndSTB(int areaId) {
+    public Cursor getAllFromCustAndSTB(int areaId, int service) {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         String query;
-        if (areaId == 1) {
-            query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees, balance, serialNo, " + KEY_NICKNAME + " FROM PERSONINFO LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID ORDER BY rootNo ASC ";
+        if (areaId == 1 ) {
+        //   query= "SELECT * FROM personInfo WHERE personinfo.serviceType = "+ service;
+
+
+               query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees, balance, serialNo, remark FROM PERSONINFO LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID WHERE personinfo.serviceType = "+ service +" ORDER BY rootNo ASC ";
+
         } else {
-            query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM PERSONINFO LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID WHERE personInfo.area = " + areaId + " ORDER BY rootNo ASC ";
+            query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees,balance, serialNo,  remark FROM PERSONINFO LEFT JOIN STBRECORD ON STBRECORD._ID = PERSONINFO.STBID WHERE personInfo.area = " + areaId + " ORDER BY rootNo ASC ";
         }
-        //    Log.d(TAG, "GET ALL:" + query);
+           Log.d(TAG, "GET ALL:" + query);
+
+
         Cursor cursor = db.rawQuery(query, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -384,9 +390,9 @@ public class DbHendler extends SQLiteOpenHelper {
 
 
     //region serarch person to list
-    public Cursor searchPersonToList(String namesearch) {
+    public Cursor searchPersonToList(String namesearch, int service) {
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_NAME + "  LIKE '%" + namesearch + "%';";
+        String query = "SELECT personinfo._id,name,phone_no,rootNo,constatus, fees,balance, serialNo, " + KEY_NICKNAME + " FROM " + TABLE_PERSON_INFO + " LEFT JOIN " + TABLE_STB + " ON STBRECORD._ID = PERSONINFO.STBID  WHERE " + KEY_NAME + "  LIKE '%" + namesearch + "%' AND personinfo.serviceType = " + service + " ; " ;
         Cursor cursor = db.rawQuery(query, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -1377,6 +1383,18 @@ public class DbHendler extends SQLiteOpenHelper {
         return packList;
     }
 
+    public void addPackageonStb (){
+        String query ="SELECT * FROM pkgList";
+        SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+         if(cursor!=null){
+
+             Toast.makeText(context, ""+cursor.getCount(), Toast.LENGTH_SHORT).show();
+         }
+
+    }
+
+
     public String getPackPrice(String packOnStb) {
         String query = "select * from pkgList where pkgname  = '" + packOnStb + "' ";
         SQLiteDatabase db = DbHendler.this.getWritableDatabase();
@@ -1431,7 +1449,27 @@ public class DbHendler extends SQLiteOpenHelper {
         }
         return (new DecimalFormat("#.00").format(fees));
     }
-        public class BGTask extends AsyncTask<Void, Integer, Void> {
+
+    public Cursor getchannelListToAdd() {
+       // String query="SELECT * FROM pkgList";
+        String query = "SELECT\n" +
+                "\t*\n" +
+                "FROM\n" +
+                "\tpkgList\n" +
+                "\tINNER JOIN\n" +
+                "\tpackType\n" +
+                "\tON \n" +
+                "\t\tpkgList.type = packType._id";
+        SQLiteDatabase db = DbHendler.this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        return cursor;
+
+
+
+
+    }
+
+    public class BGTask extends AsyncTask<Void, Integer, Void> {
 
             ProgressDialog progressDialog;
             int rowcount;

@@ -13,8 +13,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+//import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -57,10 +59,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import androidx.appcompat.widget.Toolbar;
 
 import me.tatarka.support.job.JobScheduler;
 
-
+// TODO: 01-11-2020 set cable connection Service as CATV and use internet for Net connections
 // TODO: 1/16/2017  prevent reverse engineering (will use minify)
 // TODO: 1/25/2017  email support to be added (crash reporting option will be used)
 // TODO: 2/13/2017 start and stop date needed(cut option)
@@ -102,6 +105,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
     BaseColor myColor = WebColors.getRGBColor("#9E9E9E");
     BaseColor myColor1 = WebColors.getRGBColor("#757575");
     ProgressBar progressBar;
+    int service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +189,21 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("All Customers");
+
+
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle == null) {
+            return;
+        }
+        if (bundle != null) {
+            service= bundle.getInt("selected");
+            Toast.makeText(context, ""+service, Toast.LENGTH_SHORT).show();
+        }
+
+
+
+
 
 
         if (isExternalStorageWritable() == false) {
@@ -361,14 +380,17 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
 
 
         } else if (item.getTitle() == "Reciept") {
-            android.app.FragmentManager manager = getFragmentManager();
-            Bundle bundle = new Bundle();
-            DialogReciept dialog = new DialogReciept();
-            dialog.setArguments(bundle);
-            int id = (int) menuInfo.id;
-            bundle.putInt("ID", id);
+            Intent intent =new Intent(this,RecieptActivity.class);
 
-            dialog.show(manager, "dialog");
+      //      android.app.FragmentManager manager = getFragmentManager();
+       //     Bundle bundle = new Bundle();
+      //      DialogReciept dialog = new DialogReciept();
+       //     dialog.setArguments(bundle);
+            int id = (int) menuInfo.id;
+        //    bundle.putInt("ID", id);
+            intent.putExtra("ID", id);
+
+            startActivity(intent);
 
         } else if (item.getTitle() == "Call") {
             int custId = (int) menuInfo.id;
@@ -524,16 +546,16 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
     }
 
 
-    public void createList(String s) {
+    public void createList(String s ) {
         try {
             if (s.equals("")) {
                 //
-                mCursor = dbHendler.getAllFromCustAndSTB(areaId);
+                mCursor = dbHendler.getAllFromCustAndSTB(areaId, service);
 
             } else if (!s.equals("") && !s.equals("largeBalance")) {
                 //     Log.d(TAG, "createList: 2");
                 if (searchBy == 0) {
-                    mCursor = dbHendler.searchPersonToList(s);
+                    mCursor = dbHendler.searchPersonToList(s,service);
                 } else if (searchBy == 1) {
                     mCursor = dbHendler.searchPersonByNickName(s);
                 } else if (searchBy == 2) {
@@ -672,7 +694,7 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
     //region recreate list on dialog closed
     public void refreshListView() {
 
-        mCursor = dbHendler.getAllFromCustAndSTB(areaId);
+        mCursor = dbHendler.getAllFromCustAndSTB(areaId, service);
         myAdapter.swapCursor(mCursor);
     }
     //endregion
@@ -785,7 +807,7 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
     }
 
 
-    @Override
+  /*  @Override
     public void onBackPressed() {
         backpress = (backpress + 1);
         if (backpress == 1) {
@@ -806,7 +828,7 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
             super.onBackPressed();
         }
     }
-
+*/
     @Override
     public void respond(String data) {
 
@@ -1091,7 +1113,7 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
         table.addCell("Total");
         table.addCell("Date");
         table.setHeaderRows(1);
-        Cursor cursor = dbHendler.getAllFromCustAndSTB(areaId);
+        Cursor cursor = dbHendler.getAllFromCustAndSTB(areaId, service);
         int totalfees = 0;
         if (cursor.moveToFirst()) {
 

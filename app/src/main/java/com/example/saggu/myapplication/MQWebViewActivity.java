@@ -11,9 +11,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.http.SslError;
 import android.os.PersistableBundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+//import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -56,6 +58,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
     List<String> listServerId, listUserId;
     List<String> listPW;
     EditText searchInpage;
+    int custid;
 
 
     @Override
@@ -100,6 +103,8 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
             sn = bundle.getString("SN");
             oldsn = sn;
             Log.d(TAG, "onCreate bundle: " + sn);
+            custid = bundle.getInt("ID");
+            Log.d(TAG, "onCreate: web activity cust id "+custid );
             // Log.d(TAG, "onResume:  first " + sn+"  second "+ oldsn);
         }
 
@@ -261,6 +266,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
             }
             if (bundle != null) {
                 sn = bundle.getString("SN");
+                custid= bundle.getInt("ID");
                 cActivity = bundle.getString("CALLINGACTIVITY");
                 if (!oldsn.equals(sn)) {
                     myWebViewClient webViewClient = new myWebViewClient();
@@ -305,7 +311,7 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d(TAG, "onKeyDown: ");
-        oldsn = sn; // swap the old an new sn
+        oldsn = sn; // swap the old and new sn
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (cActivity.equals("VIEWALL")) {
                 Intent intent = new Intent(this, ViewAll.class);
@@ -318,7 +324,8 @@ public class MQWebViewActivity extends AppCompatActivity implements AdapterView.
             }
             if (cActivity.equals("StbForCustomer")) {
                 Intent intent = new Intent(this, StbForCustomer.class);
-                startActivity(intent);
+                    intent.putExtra("ID",custid);
+                   startActivity(intent);
 
             }
             return true;

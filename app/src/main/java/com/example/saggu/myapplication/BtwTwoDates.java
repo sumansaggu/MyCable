@@ -2,9 +2,11 @@ package com.example.saggu.myapplication;
 
 import android.app.DialogFragment;
 import android.database.Cursor;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+//import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -35,8 +37,8 @@ public class BtwTwoDates extends AppCompatActivity implements Communicator {
         dateFrom = (EditText) findViewById(R.id.date_from);
         dateTo = (EditText) findViewById(R.id.date_to);
         from_to_textview = (TextView) findViewById(R.id.from_to_textview);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
+      Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+       setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Collection Between Two Dates");
         getDate();
         dateFrom.clearFocus();
@@ -143,7 +145,6 @@ public class BtwTwoDates extends AppCompatActivity implements Communicator {
         datePicker1.setArguments(bundle);
         bundle.putInt("id", idFrom);
 
-
     }
 
     public void pickDateTo() {
@@ -160,7 +161,6 @@ public class BtwTwoDates extends AppCompatActivity implements Communicator {
     public void respond(String date) {
         dateFrom.setText(date);
         getCollection();
-
     }
 
     @Override

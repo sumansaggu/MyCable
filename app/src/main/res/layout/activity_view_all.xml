@@ -18,19 +18,18 @@
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:indeterminate="false"
 
-
         />
 
 
-
     <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="450dp"
-        android:text="New Text"
         android:id="@+id/listView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@+id/app_bar"
+        android:layout_above="@id/relativeLayout2"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:text="New Text" />
 
     <RelativeLayout
         android:id="@+id/relativeLayout2"
@@ -57,7 +56,6 @@
             android:id="@+id/spinnerSearchByName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
 

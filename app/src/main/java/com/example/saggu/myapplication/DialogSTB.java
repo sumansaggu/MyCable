@@ -21,6 +21,7 @@ import android.widget.RadioButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Created by Saggu on 1/25/2017.
@@ -192,7 +193,7 @@ public class DialogSTB extends DialogFragment implements View.OnClickListener {
     }
     //endregion
 
-    private class MySimpleCursorAdapter extends android.support.v4.widget.SimpleCursorAdapter {
+    private class MySimpleCursorAdapter extends SimpleCursorAdapter{
         public MySimpleCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
             super(context, layout, c, from, to, flags);
         }

@@ -1,8 +1,8 @@
 package com.example.saggu.myapplication;
+import androidx.appcompat.app.AppCompatActivity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,8 +29,8 @@ public class AreaAddEdit extends AppCompatActivity implements View.OnClickListen
         AreaNo = (EditText) findViewById(R.id.editTextAreaNo);
         AreaAddEdit = (Button) findViewById(R.id.btnAreaAddEdit);
         AreaAddEdit.setOnClickListener(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
+   //     Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+ //       setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Add New Area");
 
         Bundle bundle = getIntent().getExtras();
