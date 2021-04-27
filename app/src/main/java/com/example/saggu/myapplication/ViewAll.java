@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 //import android.support.v7.app.AppCompatActivity;
@@ -36,6 +37,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -59,7 +66,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import androidx.appcompat.widget.Toolbar;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import me.tatarka.support.job.JobScheduler;
 
@@ -106,6 +118,9 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
     BaseColor myColor1 = WebColors.getRGBColor("#757575");
     ProgressBar progressBar;
     int service;
+
+   // String serverURL = "https://uniqueandrocode.000webhostapp.com/hiren/androidtute.php";
+    String serverURL = "http://192.168.8.4/mycable/index.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +199,10 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
                     deletedb();
                     searchBox.setText("");
                 }
+                if (searchBox.getText().toString().equals("volley")) {
+                    loadDataFromServer();
+                    searchBox.setText("");
+                }
             }
         });
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
@@ -191,19 +210,14 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         getSupportActionBar().setTitle("All Customers");
 
 
-
         Bundle bundle = getIntent().getExtras();
         if (bundle == null) {
             return;
         }
         if (bundle != null) {
-            service= bundle.getInt("selected");
-            Toast.makeText(context, ""+service, Toast.LENGTH_SHORT).show();
+            service = bundle.getInt("selected");
+            Toast.makeText(context, "" + service, Toast.LENGTH_SHORT).show();
         }
-
-
-
-
 
 
         if (isExternalStorageWritable() == false) {
@@ -222,7 +236,37 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
 
         //  scheduleAlarm();
         checkDate();
-       // dbHendler.getPackListOnSTB(1);
+        // dbHendler.getPackListOnSTB(1);
+    }
+
+    private void loadDataFromServer() {
+        Log.d(TAG, "loadDataFromServer: ");
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, serverURL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "onResponse: ");
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                   // Log.d(TAG, "onResponse: "+jsonObject.toString());
+                    JSONArray array = jsonObject.getJSONArray("data");
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject ob = array.getJSONObject(i);
+                        Log.d(TAG, "onResponse: " + ob.getString("name"));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 
 
@@ -234,11 +278,10 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         Log.d(TAG, flag);
         Log.d(TAG, "checkDate: ");
         Log.d(TAG, "Day is " + date);
-        String lastBalanceUpdate=null;
+        String lastBalanceUpdate = null;
         if //(date == 1)
-         (date < 5 && flag.equals(notDone))
-        {
-            lastBalanceUpdate=  dbHendler.checkLastMonthlyUpdate(context);// will check last monthly operation performed date
+        (date < 5 && flag.equals(notDone)) {
+            lastBalanceUpdate = dbHendler.checkLastMonthlyUpdate(context);// will check last monthly operation performed date
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -259,7 +302,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
                 }
             };
             AlertDialog.Builder builder = new AlertDialog.Builder(ViewAll.this);
-            builder.setMessage("Update monthly Fees?? Last Updated on "+ lastBalanceUpdate).setPositiveButton("Yes", dialogClickListener)
+            builder.setMessage("Update monthly Fees?? Last Updated on " + lastBalanceUpdate).setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show();
         }
         if (date > 5 && flag.equals(done)) {
@@ -269,6 +312,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
 
         }
     }
+
     public void scheduleAlarm() {
 
         Calendar calendarNOW = Calendar.getInstance();
@@ -313,10 +357,10 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         super.onContextItemSelected(item);
         // Get extra info about list item that was long-pressed
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        if(item.getTitle()=="View STB"){
+        if (item.getTitle() == "View STB") {
             int custid = (int) menuInfo.id;
-            Log.d(TAG, "onContextItemSelected: View STB "+custid);
-            Intent intent = new Intent(this,StbForCustomer.class);
+            Log.d(TAG, "onContextItemSelected: View STB " + custid);
+            Intent intent = new Intent(this, StbForCustomer.class);
             intent.putExtra("ID", custid);
             startActivity(intent);
         }
@@ -380,14 +424,14 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
 
 
         } else if (item.getTitle() == "Reciept") {
-            Intent intent =new Intent(this,RecieptActivity.class);
+            Intent intent = new Intent(this, RecieptActivity.class);
 
-      //      android.app.FragmentManager manager = getFragmentManager();
-       //     Bundle bundle = new Bundle();
-      //      DialogReciept dialog = new DialogReciept();
-       //     dialog.setArguments(bundle);
+            //      android.app.FragmentManager manager = getFragmentManager();
+            //     Bundle bundle = new Bundle();
+            //      DialogReciept dialog = new DialogReciept();
+            //     dialog.setArguments(bundle);
             int id = (int) menuInfo.id;
-        //    bundle.putInt("ID", id);
+            //    bundle.putInt("ID", id);
             intent.putExtra("ID", id);
 
             startActivity(intent);
@@ -546,7 +590,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
     }
 
 
-    public void createList(String s ) {
+    public void createList(String s) {
         try {
             if (s.equals("")) {
                 //
@@ -555,7 +599,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
             } else if (!s.equals("") && !s.equals("largeBalance")) {
                 //     Log.d(TAG, "createList: 2");
                 if (searchBy == 0) {
-                    mCursor = dbHendler.searchPersonToList(s,service);
+                    mCursor = dbHendler.searchPersonToList(s, service);
                 } else if (searchBy == 1) {
                     mCursor = dbHendler.searchPersonByNickName(s);
                 } else if (searchBy == 2) {
@@ -615,80 +659,80 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
     }
 
 
-private class MySimpleCursorAdapter extends SimpleCursorAdapter {
-    public MySimpleCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
-        super(context, layout, c, from, to, flags);
-    }
+    private class MySimpleCursorAdapter extends SimpleCursorAdapter {
+        public MySimpleCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+            super(context, layout, c, from, to, flags);
+        }
 
-    @Override
-    // The newView method is used to inflate a new view and return it,
-    // you don't bind any data to the view at this point.
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_list, parent, false);
-        return view;
-    }
+        @Override
+        // The newView method is used to inflate a new view and return it,
+        // you don't bind any data to the view at this point.
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            View view = LayoutInflater.from(context).inflate(R.layout.layout_list, parent, false);
+            return view;
+        }
 
-    @Override
-    // The bindView method is used to bind all data to a given view
-    // such as setting the text on a TextView.
-    public void bindView(View view, Context context, Cursor cursor) {
+        @Override
+        // The bindView method is used to bind all data to a given view
+        // such as setting the text on a TextView.
+        public void bindView(View view, Context context, Cursor cursor) {
 
-        // Find fields to populate in inflated template
-        TextView name = (TextView) view.findViewById(R.id.pName);
-        TextView mobile = (TextView) view.findViewById(R.id.pMob);
-        TextView conNo = (TextView) view.findViewById(R.id.cNo);
-        TextView sn = (TextView) view.findViewById(R.id.vc_mac);
-        TextView status = (TextView) view.findViewById(R.id.cStatus);
-        TextView fees = (TextView) view.findViewById(R.id.cRent);
-        TextView balance = (TextView) view.findViewById(R.id.cBalance);
-        TextView nickname = (TextView) view.findViewById(R.id.txtnickname);
-
-
-        // Extract properties from cursor
-        //   int id = cursor.getInt(cursor.getColumnIndex(DbHendler.KEY_ID));
-        String mname = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NAME));
-        String mmobile = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_PHONE_NO));
-        String mconno = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_ROOT_NO));
-        String msn = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_SN));
-        String mstatus = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_CONSTATUS));
-        String mfees = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_FEES));
-        String mbalance = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_BALANCE));
-        String mnickname = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NICKNAME));
-
-        name.setText(mname);
-        mobile.setText(mmobile);
-        conNo.setText(mconno);
-        sn.setText(msn);
-
-        if (mstatus.equals("ACTIVE")) {
-            status.setText(" ");
-        } else status.setText("C");
-
-        fees.setText(mfees);
-        balance.setText(mbalance);
-        nickname.setText(mnickname);
+            // Find fields to populate in inflated template
+            TextView name = (TextView) view.findViewById(R.id.pName);
+            TextView mobile = (TextView) view.findViewById(R.id.pMob);
+            TextView conNo = (TextView) view.findViewById(R.id.cNo);
+            TextView sn = (TextView) view.findViewById(R.id.vc_mac);
+            TextView status = (TextView) view.findViewById(R.id.cStatus);
+            TextView fees = (TextView) view.findViewById(R.id.cRent);
+            TextView balance = (TextView) view.findViewById(R.id.cBalance);
+            TextView nickname = (TextView) view.findViewById(R.id.txtnickname);
 
 
-    }
+            // Extract properties from cursor
+            //   int id = cursor.getInt(cursor.getColumnIndex(DbHendler.KEY_ID));
+            String mname = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NAME));
+            String mmobile = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_PHONE_NO));
+            String mconno = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_ROOT_NO));
+            String msn = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_SN));
+            String mstatus = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_CONSTATUS));
+            String mfees = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_FEES));
+            String mbalance = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_BALANCE));
+            String mnickname = cursor.getString(cursor.getColumnIndex(DbHendler.KEY_NICKNAME));
+
+            name.setText(mname);
+            mobile.setText(mmobile);
+            conNo.setText(mconno);
+            sn.setText(msn);
+
+            if (mstatus.equals("ACTIVE")) {
+                status.setText(" ");
+            } else status.setText("C");
+
+            fees.setText(mfees);
+            balance.setText(mbalance);
+            nickname.setText(mnickname);
 
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        //get reference to the row
-        View view = super.getView(position, convertView, parent);
+        }
 
 
-        //check for odd or even to set alternate colors to the row background
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            //get reference to the row
+            View view = super.getView(position, convertView, parent);
+
+
+            //check for odd or even to set alternate colors to the row background
             /*if (position % 2 == 0) {
                 view.setBackgroundColor(Color.rgb(238, 233, 233));
             } else {
                 view.setBackgroundColor(Color.rgb(255, 255, 255));
             }*/
-        return view;
-    }
+            return view;
+        }
 
-}
+    }
 
 
     //region recreate list on dialog closed
@@ -807,28 +851,28 @@ private class MySimpleCursorAdapter extends SimpleCursorAdapter {
     }
 
 
-  /*  @Override
-    public void onBackPressed() {
-        backpress = (backpress + 1);
-        if (backpress == 1) {
-            Toast.makeText(getApplicationContext(), " Press Back again to Exit ", Toast.LENGTH_SHORT).show();
-        }
-        if (backpress > 1) {
+    /*  @Override
+      public void onBackPressed() {
+          backpress = (backpress + 1);
+          if (backpress == 1) {
+              Toast.makeText(getApplicationContext(), " Press Back again to Exit ", Toast.LENGTH_SHORT).show();
+          }
+          if (backpress > 1) {
 
-            try {
-                MQWebViewActivity.mqactivity.finish();   // to finish Oracle activity on backpress
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Intent startMain = new Intent(Intent.ACTION_MAIN);
-            startMain.addCategory(Intent.CATEGORY_HOME);
-            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(startMain);
-            finishAffinity();
-            super.onBackPressed();
-        }
-    }
-*/
+              try {
+                  MQWebViewActivity.mqactivity.finish();   // to finish Oracle activity on backpress
+              } catch (Exception e) {
+                  e.printStackTrace();
+              }
+              Intent startMain = new Intent(Intent.ACTION_MAIN);
+              startMain.addCategory(Intent.CATEGORY_HOME);
+              startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+              startActivity(startMain);
+              finishAffinity();
+              super.onBackPressed();
+          }
+      }
+  */
     @Override
     public void respond(String data) {
 

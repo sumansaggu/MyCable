@@ -618,8 +618,9 @@ public class DbHendler extends SQLiteOpenHelper {
     }
 
 
-    //region addingh new person
+    //region adding new person
     public void addPerson(PersonInfo personInfo, Context context) {
+
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, personInfo.getName());
@@ -630,9 +631,12 @@ public class DbHendler extends SQLiteOpenHelper {
         values.put(KEY_AREA, personInfo.get_area());
         values.put(KEY_STARTDATE, personInfo.get_startdate());
         values.put(KEY_NICKNAME, personInfo.get_nName());
+
         //Insert row
         db.insert(TABLE_PERSON_INFO, null, values);
+
         db.close(); //close database
+
         Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show();
 
     }
@@ -1465,8 +1469,38 @@ public class DbHendler extends SQLiteOpenHelper {
         return cursor;
 
 
+    }
+
+    public void setPkgToStb(int stbid, ArrayList<Integer> selected_ch_id) {
+
+        Toast.makeText(context, "method in db called", Toast.LENGTH_SHORT).show();
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        for(int i=0;i<selected_ch_id.size();i++){
+            values.put("stbid", stbid);
+            values.put("pkgId", selected_ch_id.get(i));
 
 
+            Log.d(TAG, "setPkgToStb: "+stbid+" "+selected_ch_id.get(i));
+            db.insert("pkgOnStb", null, values);
+        }
+
+        db.close();
+    }
+
+    public int getSTBIdWithSn(String sn) {
+
+        int id=0;
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT _id FROM stbrecord WHERE serialNo =" + "'" + sn + "'";
+        Cursor cursor= db.rawQuery(query,null);
+
+        if (cursor.moveToFirst()){
+            id =cursor.getInt(cursor.getColumnIndex("_id"));
+        }
+
+
+        return id;
     }
 
     public class BGTask extends AsyncTask<Void, Integer, Void> {

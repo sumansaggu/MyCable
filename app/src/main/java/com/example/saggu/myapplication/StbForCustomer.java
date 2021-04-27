@@ -44,6 +44,21 @@ public class StbForCustomer extends AppCompatActivity {
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Toast.makeText(this, "on redume called", Toast.LENGTH_SHORT).show();
+        prepareListData();
+        // get the listview
+
+        registerForContextMenu(expListView);
+        // preparing list data
+
+        listAdapter = new expandListAdapter(this, listDataHeader, listDataChild);
+        // setting list adapter
+        expListView.setAdapter(listAdapter);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stb_for_customer);
@@ -52,17 +67,8 @@ public class StbForCustomer extends AppCompatActivity {
         if (bundle !=null){
             custId = bundle.getInt("ID");
         }
-
-
-        prepareListData();
-        // get the listview
         expListView = (ExpandableListView) findViewById(R.id.expandable_list_stb);
-        registerForContextMenu(expListView);
-        // preparing list data
 
-        listAdapter = new expandListAdapter(this, listDataHeader, listDataChild);
-        // setting list adapter
-        expListView.setAdapter(listAdapter);
         Toolbar toolbar = findViewById(R.id.toolbarchannellist);
         toolbar.setTitle("STBs");
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_audiotrack_dark));
@@ -180,6 +186,7 @@ public class StbForCustomer extends AppCompatActivity {
 
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+
             //   Log.d(TAG, "getGroupView: "+groupPosition);
             final String headerTitle = (String) getGroup(groupPosition);
 
