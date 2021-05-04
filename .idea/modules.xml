@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MyCable.iml" filepath="$PROJECT_DIR$/MyCable.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MyCable.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MyCable.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MyCable_Web.iml" filepath="$PROJECT_DIR$/.idea/modules/MyCable_Web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MyCable_Web.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MyCable_Web.app.iml" />
     </modules>
   </component>
 </project>
