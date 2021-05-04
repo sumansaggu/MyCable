@@ -339,8 +339,8 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add("Reciept");
         menu.add("Detail");
-        menu.add("MSO Server");
-        menu.add("Copy STB No.");
+      //  menu.add("MSO Server");
+     //   menu.add("Copy STB No.");
         menu.add("Call");
         menu.add("Message");
         menu.add("View STB");
@@ -462,7 +462,7 @@ public class ViewAll extends AppCompatActivity implements Communicator, AdapterV
             int balance = info.get_balance();
             String y = "";
             List<Fees> detail = dbHendler.getFeesForMsg(custId);
-
+            Toast.makeText(context, "some action needed ", Toast.LENGTH_SHORT).show();
             for (Fees fees : detail) {
 
                 String x = "Rs." + fees.getFees() + " " + fees.getDate() + ", ";

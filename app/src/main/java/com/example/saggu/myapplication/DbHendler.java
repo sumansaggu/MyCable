@@ -546,7 +546,7 @@ public class DbHendler extends SQLiteOpenHelper {
     public List<Fees> getFeesForMsg(int id) {
         List<Fees> feesDetail = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = {KEY_NO, KEY_ID, KEY_DATE, KEY_DEBIT, "lBalance", "curBalance", KEY_REMARK};
+        String[] columns = {KEY_NO, KEY_ID, KEY_DATE, KEY_DEBIT, KEY_REMARK};
         Cursor cursor = db.query(TABLE_FEES, columns, KEY_ID + " = '" + id + "'", null, null, null, KEY_DATE + " ASC");
 
         if (cursor.moveToFirst()) {
